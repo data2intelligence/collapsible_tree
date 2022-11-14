@@ -1,16 +1,18 @@
-var height = 1400; //+svg.attr("height");
-var width = 2000; //+svg.attr("width");
+// declare the size of the diagram
+var height = 1200;
+var width = 2000;
 var radius = width / 2;
 
+// d3.tree
 var tree = d3
     .tree()
     .size([2 * Math.PI, radius])
     .separation((a, b) => (a.parent == b.parent ? 1 : 5) / a.depth);
 
-//   const data = d3.json(
-//     "https://cdn.jsdelivr.net/gh/d3/d3-hierarchy@master/test/data/flare.json"
-//   );
-
+var stratify = d3
+    .stratify()
+    .id((d) => d.id)
+    .parentId((d) => d.parent);
 
 // Ranger Slider 
 // Move svg inside the function
@@ -18,6 +20,7 @@ var tree = d3
 var slider = document.getElementById("mySlider");
 var rotate_value = document.getElementById("rotateValue");
 rotate_value.innerHTML = slider.value;
+
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function () {
     rotate_value.innerHTML = this.value;
@@ -27,10 +30,6 @@ slider.oninput = function () {
         .attr("transform", "rotate(" + this.value + ",0,0)");
 
 }
-var stratify = d3
-    .stratify()
-    .id((d) => d.id)
-    .parentId((d) => d.parent);
 
 const geneName = "CD8A";
 
@@ -47,11 +46,10 @@ const tip = d3
     .html((d) => d.target.data.data[geneName]);
 svg.call(tip);
 
-
+//load input data
 d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
 
     //For color scale <- get the max expression value for certain gene 
-
     const expr_value_array = [];
 
     for (i = 0; i < data.length; i++) {
@@ -62,13 +60,8 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
         }
     };
     expr_max = Math.max.apply(null, expr_value_array);
-    console.log('expr_max');
-    console.log(expr_max);
 
     var treeData = stratify(data);
-    // Assigns parent, children, height, depth
-
-    // .attr("transform",'translate('+width/2+','+height/2+')')
 
 
     const linkgroup = g
@@ -85,15 +78,17 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
 
     let root = tree(d3.hierarchy(treeData));
 
+    // function convertFloat(d) {
+    //     d.data.data[geneName] = parseFloat(d.data.data[geneName]);
+    //     d.data.data["celltype_size"] = parseFloat(d.data.data["celltype_size"]);
+    // }
+    // convertFloat(root);
     weighted_avg_expr(root);
-    console.log("root_after_function");
-    console.log(root);
 
     function newdata(animate = true) {
         let root = tree(d3.hierarchy(treeData));
         let links_data = root.links();
 
-        console.log(links_data);
         let links = linkgroup
             .selectAll("path")
             .data(links_data, (d) => d.source.data.id + "_" + d.target.data.id);
@@ -103,7 +98,6 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
 
         // Color the links
         let color_scale = chroma
-            //   .scale("RdPu");
             .scale(["#f8cece", "#C70000"]);
 
         color = d3
@@ -140,8 +134,7 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
             )
             .on("mouseover", tip.show)
             .on("mouseout", tip.hide);
-        console.log("newlinks:");
-        console.log(newlinks);
+
         let t = d3
             .transition()
             .duration(animate ? 400 : 0)
@@ -173,9 +166,7 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
             }
             return d.data.id;
         });
-        console.log("Node info:");
-        console.log(nodes_data);
-        console.log(nodes);
+
         nodes.exit().remove();
 
         let newnodes = nodes.enter().append("g");
@@ -191,9 +182,6 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
         `
         );
 
-        console.log("data");
-
-        console.log(data);
 
         newnodes.append("circle").attr("r", 15);
 
@@ -209,8 +197,9 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
         // text
         newnodes
             .append("text")
-            .attr("dy", "0.31em")
+            .attr("dy", "0.35em")
             .text((d) => d.data.data.label)
+            .style("font-size", "25px")
             .clone(true)
             .lower();
 
@@ -222,7 +211,7 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
             )
             .attr("transform", (d) => (d.x >= Math.PI ? "rotate(180)" : null));
 
-        // Image
+        // image
         newnodes
             .append("image")
             .attr("class", "node-image")
@@ -245,21 +234,19 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
             });
     };
 
-
     newdata(false);
 });
 
-// Recursion
+// recursive function
 function weighted_avg_expr(d) {
     // assume all leaf nodes have size and expression set
     if (!d.children) {
-        // TODO: Yuan, I suggest you do this during data loading, but not here
         d.data.data[geneName] = parseFloat(d.data.data[geneName]);
         d.data.data["celltype_size"] = parseFloat(d.data.data["celltype_size"]);
+
         return;
 
     } else {
-        // please define all of your variables here, to avoid global variables
         var child_size, child_w_expr;
         var sum_w_expr = 0, sum_size = 0, weighted_avg_expr_result = 0;
         var i, child;

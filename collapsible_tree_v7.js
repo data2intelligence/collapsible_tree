@@ -6,7 +6,7 @@ var margin = { top: 100, right: 150, bottom: 500, left: 150 };
 
 // append the svg object to the body of the page
 // appends a 'group' element to 'svg'
-// moves the 'group' element to the top left margin
+
 var svg = d3
     .select("body")
     .append("svg")
@@ -15,51 +15,51 @@ var svg = d3
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+//declare variables
 var i = 0,
+    root,
     duration = 750,
-    root;
+    durationTime = 100;
 
-let color_scale;
 const geneName = "CD8A";
 
+// Color scale
+let color_scale;
 const scale0_1 = d3.scaleLinear().domain([0, 8]).range([0, 1]);
-
 const fill = (d) => {
     if (d.target.data.data[geneName])
         return color_scale(scale0_1(d.target.data.data[geneName]));
 };
-var durationTime = 100;
 
+// tip
 const tip = d3
     .tip()
     .attr("class", "d3-tip")
     .html((d) => data.data.data[geneName]);
 svg.call(tip);
 
+// load the input data
 d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
 
-    //For color scale <- get the max expression value for certain gene 
+    //For color scale <- get the max expression value across different cell types for certain gene 
     const expr_value_array = [];
 
     for (i = 0; i < data.length; i++) {
         if (data[i][geneName]) {
             var expr_value = parseFloat(data[i][geneName]);
-
             expr_value_array.push(expr_value);
         }
     };
     expr_max = Math.max.apply(null, expr_value_array);
-    console.log('expr_max');
-    console.log(expr_max);
 
-    // function for stratify the data
+    // stratify the data
     var stratify = d3
         .stratify()
         .id((d) => d.id)
         .parentId((d) => d.parent);
 
     treeData = stratify(data);
-    // Assigns parent, children, height, depth
+    // hierarchy(): assigns parent, children, height, depth
     root = d3.hierarchy(treeData);
 
     root.x0 = height / 2;
@@ -76,16 +76,13 @@ d3.csv("data/structure_expr_no_weighted.csv").then((data) => {
 
     // Recursively get the weighted avg of expression level for each node.
     weighted_avg_expr(root);
-    console.log("root_after_function");
-    console.log(root);
 
-
-    // Collapse after the second level
+    // Collapse after the second level for the initial layout. (Optional)
     // root.children.forEach(collapse);
     update(root);
 });
 
-// Recursion ----------------
+// recursive function
 function weighted_avg_expr(d) {
     // assume all leaf nodes have size and expression set
     if (!d.children) {
@@ -116,7 +113,7 @@ function weighted_avg_expr(d) {
 };
 
 
-// Collapse the node and all it's children
+// collapse the node and all it's children
 function collapse(d) {
     if (d.children) {
         d._children = d.children;
@@ -124,7 +121,7 @@ function collapse(d) {
         d.children = null;
     }
 }
-
+// update the tree after collapse
 function update(data) {
     // Compute the new tree layout.
     var nodes = root.descendants(),
