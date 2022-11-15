@@ -52,13 +52,17 @@ There are two different layouts available, and both are collapsible :
 2. Radial tree. (D3.js version5)
     * Users can use the slider to rotate the tree.
 
-
+We apply color scale to edges based on the expression level and the width of edge are proportional to it as well. 
 TODO:
 1- Where should we put the other libraried needed for the html.
 
 2- To what extent do we need to specify in details?
 ? how to link the new icon
 
+3- maybe: + visualization of the mini data example above.
+
+4- tip for tree v7;
+decimal for radial tree v5 for internal nodes(values showed on edges)
 
 
 
