@@ -2,9 +2,9 @@
 
 ### This is a javascript library for cell lineage visualization.
 
-#### Users can easily visualize their expression data in a hieracrhical way. The gene expression levels across different cell types are mapped on to a knowledge-based cell lineage structure. 
+Users can easily visualize their expression data in a hieracrhical way. The gene expression levels across different cell types are mapped on to a knowledge-based cell lineage structure. 
+The hierarchical tree strcuture facilitates the exploration and interpretation of the data.
 
-#### The hierarchical tree strcuture facilitates the exploration and interpretation of the data.
 ---
 **Input data**
 ---
@@ -25,7 +25,7 @@ Consider the following table of cell lineage relationships.
 |T CD8|T CD8 central memory|central memory|6.19|980.0|
 |T CD8|T CD8 effector|effector|5.98|2130.0|
 
-You can prepare your data as a **.csv** file.
+Prepare your data as a **.csv** file.
 ```
 parent,id,label,CD8A,celltype_size
 ,T cell,T cell,,,
