@@ -13,6 +13,18 @@
     <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
 
     <script src="collapsible_tree_v7.js"></script>
-    <div id="tooltip"></div>
+
+    <script>
+      const search_gene = "CD8A"; 
+      const input_data = "data/structure_expr_no_weighted.csv"; 
+      // where to append your tree. It can be selected by tag, class name, or ID. 
+      // Format: select("tag"), select(".classname"), select("#ID")
+      const location1 = "body";
+      const path_to_icon_folder = "data/CellTypeIcon_separate/";  
+                                  
+      collapsible_tree(input_data, search_gene, location1, path_to_icon_folder);
+
+    </script>
   </body>
 </html>
+
