@@ -18,11 +18,11 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
 
     var root;
 
-    // load the input data
+    // Load the input data
     d3.csv(input_data).then((data) => {
 
-        //Get the max expression value of certain gene across all cell types
-        //Then this will be used in the color scale section below.
+        // Get the max expression value of certain gene across all cell types
+        // Then this will be used in the color scale section below.
         const expr_value_array = [];
 
         for (i = 0; i < data.length; i++) {
@@ -41,13 +41,13 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
 
         treeData = stratify(data);
 
-
         // d3.hierarchy(): assigns parent, children, height, depth. A built-in function in d3.
         root = d3.hierarchy(treeData);
 
         root.x0 = height / 2;
         root.y0 = 0;
 
+        // d3.tree(): generate a hierarchical tree.  A built-in function in d3.
         root = d3
             .tree()
             .size([innerHeight * 0.9, innerWidth * 0.9])
@@ -113,7 +113,6 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
             d.y = d.depth * 230;
         });
 
-
         // ****************** Nodes section ***************************
 
         // Update the nodes...
@@ -132,7 +131,7 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
             })
             .on("click", click);
 
-        // Add Circle for the nodes
+        // Add circle for the nodes
         nodeEnter.append("circle").attr("class", "node").attr("r", 1e-6);
 
         // Add labels for the nodes
@@ -150,7 +149,7 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
                 return d.data.data.label;
             });
 
-        // //add images for the nodes
+        // Add images for the nodes
         nodeEnter
             .append("image")
             .attr("class", "node-image")
@@ -219,8 +218,7 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
         const scale0_1 = d3.scaleLinear().domain([0, expr_max]).range([0, 1]);
 
         // Set the color style of links
-        var color_scale = chroma
-            .scale(["#f8cece", "#C70000"]);
+        var color_scale = chroma.scale(["#f8cece", "#C70000"]);
 
         // Set the "fill" funtion, which will be applied to "link.style()".
         const fill = (d) => {
