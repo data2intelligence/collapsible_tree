@@ -6,8 +6,32 @@ Users can easily visualize their expression data in a hieracrhical way. The gene
 The hierarchical tree strcuture facilitates the exploration and interpretation of the data.
 
 ---
-**Input data**
+**Tree layout**
 ---
+There are two different layouts available, and both are collapsible :
+1. Horizontal tree. (D3.js version 7)
+2. Radial tree. (D3.js version5)
+    * Users can use the slider to rotate the tree.
+3. We apply color scale to edges based on the expression level and the width of edge are proportional to it as well.
+
+---
+**How to use**
+---
+Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/lineage_visualization/tree/main/tree_example) folder.
+
+In brief, you can load the JavaScript file as a library, along with other libraries(e.g. d3 library). We wrapped up the visulization function to two **matser functios** for  horizontal and radial tree. Both have four arguments: 
+* input_data: path to input data (gene expression level and child-parent relationship).
+* search_gene: name of the gene you want to search with.
+* location1: where you want to append the diagram.
+* path_to_icon_folder: path to the icon image folder.
+
+Then you can pass these arguments and call the master function(s) to generate a hierarchical tree.
+
+Please see detailed information below.
+
+---
+### **How to prepare your input data**
+
 1. Raw data should contain:
     * scRNA data: gene by cell matrix.
     * meta data: annotate the cell type for each cell.
@@ -45,24 +69,12 @@ T CD8,T CD8 effector,effector,5.98,2130.0
 4. The last column is the number of cells in certain cell type.
     * Expression values and size of celltype are required for leaf nodes, while we provide a recursive function to calculate the weighted average expression level for root node and all internal nodes.
 
-**Layout**
----
-There are two different layouts available, and both are collapsible :
-1. Basic tree. (D3.js version 7)
-2. Radial tree. (D3.js version5)
-    * Users can use the slider to rotate the tree.
-
-We apply color scale to edges based on the expression level and the width of edge are proportional to it as well. 
 TODO:
-1- Where should we put the other libraried needed for the html.
 
-2- To what extent do we need to specify in details?
-? how to link the new icon
+1- maybe: + visualization of the mini data example above.
 
-3- maybe: + visualization of the mini data example above.
+2- tip for tree v7;
 
-4- tip for tree v7;
-decimal for radial tree v5 for internal nodes(values showed on edges)
 
 
 
