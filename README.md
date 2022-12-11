@@ -16,9 +16,11 @@ There are two different layouts available, and both are collapsible :
 
 Preview:
 * Horizontal tree
+
 <img src= "tree_example/data/preview_image/horizontal_tree.png" width = "480" height= "300">
 
 * Radial tree
+
 <img src= "tree_example/data/preview_image/radial_tree.png" 
 width = "480" height= "300">
 

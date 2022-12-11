@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="UTF-8" />
+  <header>
+    <title>Collapsible tree</title> 
+    <link rel="stylesheet" href="collapsible_tree_v7.CSS" />
+  </header>
+
+  <body>
+    <!-- load libraries -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
+    <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
+
+    <script src="tree_JSON_input.js"></script>
+
+    <script>
+      const search_gene = "CD8A"; 
+      const input_csv = "data/structure_expr_no_weighted.csv"; 
+      // where to append your tree. It can be selected by tag, class name, or ID. 
+      // Format: select("tag"), select(".classname"), select("#ID")
+      const location1 = "body";
+      const path_to_icon_folder = "data/CellTypeIcon_separate/";  
+
+      d3.csv(input_csv).then((data)=>{
+ 
+        // Get the max expression value of certain gene across all cell types
+        // Then this will be used in the color scale section below.
+        const expr_value_array = [];
+
+        for (i = 0; i < data.length; i++) {
+            if (data[i][search_gene]) {
+                var expr_value = parseFloat(data[i][search_gene]);
+                expr_value_array.push(expr_value);
+            }
+        };
+        expr_max = Math.max.apply(null, expr_value_array);
+
+        var stratify = d3
+            .stratify()
+            .id((d) => d.id)
+            .parentId((d) => d.parent);
+
+        input_data = stratify(data);
+        
+        //Now, the input data has been converted to a json format.
+        collapsible_tree(input_data, search_gene, location1, path_to_icon_folder);
+      })                          
+
+    </script>
+  </body>
+</html>
+
