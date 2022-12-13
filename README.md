@@ -29,7 +29,7 @@ width = "480" height= "300">
 ---
 Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/lineage_visualization/tree/main/tree_example) folder.
 
-In brief, you can load the JavaScript file as a library, along with other libraries(e.g. d3 library). We wrapped up the visulization function to two **matser functios** for  horizontal and radial tree. Both have four arguments: 
+In brief, you can load the JavaScript file as a library, along with other libraries(e.g. d3 library). We wrapped up the visulization function to two **matser functions** for  horizontal and radial tree. Both have four arguments: 
 * input_data: path to input data (gene expression level and child-parent relationship).
 * search_gene: name of the gene you want to search with.
 * location1: where you want to append the diagram.

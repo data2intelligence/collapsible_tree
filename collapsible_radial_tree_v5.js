@@ -76,6 +76,7 @@ function collapsible_radial_tree(input_data, search_gene, location, path_to_icon
         weighted_avg_expr(root);
 
         function newdata(animate = true) {
+            let root = tree(d3.hierarchy(treeData));
 
             let links_data = root.links();
 

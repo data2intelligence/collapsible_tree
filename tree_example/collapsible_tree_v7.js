@@ -3,7 +3,7 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
     // Set the dimensions and margins of the diagram
     var margin = { top: 100, right: 150, bottom: 500, left: 150 };
     (width = 2000 - margin.left - margin.right),
-        (height = 1600 - margin.top - margin.bottom);
+        (height = 1800 - margin.top - margin.bottom);
 
     // append the svg object to the body of the page
     // appends a 'group' element to 'svg'
@@ -50,7 +50,7 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
         // d3.tree(): generate a hierarchical tree.  A built-in function in d3.
         root = d3
             .tree()
-            .size([innerHeight * 0.9, innerWidth * 0.9])
+            .size([innerHeight * 0.85, innerWidth * 0.85])
             .separation(function (a, b) {
                 return a.parent == b.parent ? 1 : 2.5;
             })(root);
