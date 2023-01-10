@@ -20,7 +20,11 @@
       // where to append your tree. It can be selected by tag, class name, or ID. 
       // Format: select("tag"), select(".classname"), select("#ID")
       const location1 = "body";
-      const path_to_icon_folder = "data/CellTypeIcon_separate/";  
+
+      // local icon folder: [old]
+      // const path_to_icon_folder = "data/CellTypeIcon_separate/";  
+      // online pathto icons
+      const path_to_icon_folder = "https://hpc.nih.gov/~Jiang_Lab/Lineage/";
                                   
       collapsible_tree(input_data, search_gene, location1, path_to_icon_folder);
 
@@ -51,7 +55,7 @@
     var downloadLink = document.createElement("a");
     downloadLink.href = svgUrl;
     downloadLink.download = "graph2222.svg";
-    
+
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
