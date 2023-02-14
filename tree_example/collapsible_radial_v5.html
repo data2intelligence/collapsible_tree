@@ -4,7 +4,7 @@
     <title>Collapsible Radial Tree</title>
 
   </head>
-  <body>
+  <body style = "background-color: white;">
     <div>  <svg></svg> </div>
 
     <div class="slidecontainer">
@@ -30,5 +30,39 @@
                                   
       collapsible_radial_tree(input_data, search_gene, location1, path_to_icon_folder);
     </script>
+
+    <button type="button" id="saveSvg-button" onclick="saveSvg()" 
+    style="height: 100px; width: 200px; font-weight: bold; font-size: larger">Save as SVG</button>    
+
   </body>
+
+  <script>
+
+    function saveSvg() {
+      var svgEl = document.getElementsByTagName("svg")[0];
+      svgEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      svgEl.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+  
+      var defs1 = document.createElement("defs");
+      defs1.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+      defs1.innerHTML = "<style type=\"text/css\"><![CDATA[.node circle { fill: rgb(255, 255, 255); }.node text { font: 18px sans-serif; }.link { fill: none; stroke: rgb(204, 204, 204); stroke-width: 2px; }]]></style>\n"
+  
+      svgEl.append(defs1);
+  
+      var svgData = svgEl.outerHTML;
+  
+      var preface = '<?xml version="1.0" standalone="no"?>\r\n';
+      // var style = '<style>circle{fill: : #fff}text{font:18px sans-serif}link{fill: none; stroke:#ccc; stroke-width: 2px}</style>'
+      var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
+      var svgUrl = URL.createObjectURL(svgBlob);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = svgUrl;
+      downloadLink.download = "radial_graph_test.svg";
+  
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+  
+  </script>
 </html>

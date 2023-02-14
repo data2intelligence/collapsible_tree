@@ -78,3 +78,9 @@ T CD8,T CD8 effector,effector,5.98,2130.0
 3. Next column should be normalized expression level of a gene. Here we use "CD8A" as an example, normalized by TPM.
 4. The last column is the number of cells in certain cell type.
     * Expression values and size of celltype are required for leaf nodes, while we provide a recursive function to calculate the weighted average expression level for root node and all internal nodes.
+
+
+### **Download and edit the image**
+For both layouts, we provide a download button to download the svg image. You will open `open` -> `open with Google Chrome` (Or any other browser you are using) to view the image. Since we use the online source for the cell type icons, we need the browser to render the complete image. Then `right click` -> `print`, you could download the svg in `pdf`, which enables you to edit the diagram in editor software, like InkScape. You can drag the icons, modify the text.
+
+P.S. If you use icons from a local folder, you can move the svg to the folder according to the path you used in your JS script. 

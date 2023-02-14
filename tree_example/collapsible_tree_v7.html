@@ -14,6 +14,7 @@
 
     <script src="collapsible_tree_v7.js"></script>
 
+
     <script>
       const search_gene = "CD8A"; 
       const input_data = "data/structure_expr_no_weighted.csv"; 
@@ -23,17 +24,18 @@
 
       // local icon folder: [old]
       // const path_to_icon_folder = "data/CellTypeIcon_separate/";  
+      
       // online pathto icons
       const path_to_icon_folder = "https://hpc.nih.gov/~Jiang_Lab/Lineage/";
                                   
       collapsible_tree(input_data, search_gene, location1, path_to_icon_folder);
 
     </script>
-    <button type="button" onclick="saveSvg()" style="height: 100px;width: 200px; font-weight: bold; font-size: larger">Download</button>
-  </body>
+    <button type="button" id="saveSvg-button" onclick="saveSvg()" 
+    style="height: 100px; width: 200px; font-weight: bold; font-size: larger">Save as SVG</button>    
+ </body>
 
 <script>
-
 
   function saveSvg() {
     var svgEl = document.getElementsByTagName("svg")[0];
@@ -54,12 +56,13 @@
     var svgUrl = URL.createObjectURL(svgBlob);
     var downloadLink = document.createElement("a");
     downloadLink.href = svgUrl;
-    downloadLink.download = "graph2222.svg";
+    downloadLink.download = "graph_test.svg";
 
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
   }
+
 </script>
 
 </html>

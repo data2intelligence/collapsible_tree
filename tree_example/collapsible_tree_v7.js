@@ -1,5 +1,5 @@
 
-function collapsible_tree(input_data, search_gene, location, path_to_icon_folder) {
+function collapsible_tree(input_data, search_gene, location1, path_to_icon_folder) {
     // Set the dimensions and margins of the diagram
     var margin = { top: 100, right: 150, bottom: 500, left: 150 };
     (width = 2000 - margin.left - margin.right),
@@ -9,7 +9,7 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
     // appends a 'group' element to 'svg'
 
     var svg = d3
-        .select(location)
+        .select(location1)
         .append("svg")
         .attr("width", width + margin.right + margin.left)
         .attr("height", height + margin.top + margin.bottom)
@@ -44,15 +44,16 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
         // d3.hierarchy(): assigns parent, children, height, depth. A built-in function in d3.
         root = d3.hierarchy(treeData);
 
+        console.log(root);
         root.x0 = height / 2;
         root.y0 = 0;
 
         // d3.tree(): generate a hierarchical tree.  A built-in function in d3.
         root = d3
             .tree()
-            .size([innerHeight * 0.85, innerWidth * 0.85])
+            .size([innerHeight * 0.7, innerWidth * 0.7])
             .separation(function (a, b) {
-                return a.parent == b.parent ? 1 : 2.5;
+                return a.parent == b.parent ? 1 : 3;
             })(root);
 
         // Recursively get the weighted avg of expression level for each node.
@@ -61,7 +62,10 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
         // Collapse after the second level for the initial layout. (Optional)
         // root.children.forEach(collapse);
         update(root);
+
+
     });
+
 
     // recursive function
     function weighted_avg_expr(d) {
@@ -294,4 +298,5 @@ function collapsible_tree(input_data, search_gene, location, path_to_icon_folder
             update(d);
         }
     }
+
 }

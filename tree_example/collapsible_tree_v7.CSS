@@ -1,3 +1,7 @@
+body {
+  background-color: white;
+}
+
 .node circle {
   fill: #fff;
   /* stroke: steelblue; */
