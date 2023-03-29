@@ -2,6 +2,8 @@ library(ggplot2)
 library(ggpubr)
 library(dplyr)
 library(tidyr)
+library(MUDAN)
+set.seed(123)
 
 setwd("/Users/_alanglanglang/Desktop/PhD-Lab/Cell.lineage.pilot")
 getwd()
@@ -11,7 +13,7 @@ TPM_file_list <- list.files(path = "sce", pattern = "_TPM.rda")
 meta_file_list <- list.files(path = "sce", pattern = "_meta.rda")
 
 for (i in 1:length(TPM_file_list)) {
-  i = 2
+
   TPM_file = TPM_file_list[i]
   meta_file = meta_file_list[i]
   
@@ -169,13 +171,36 @@ for (i in 1:length(TPM_file_list)) {
   # And select the dots in the right-upper corner]
   #------------------------------------
   write.csv(score_df, file = paste0(folder_path, "/score_df.csv"))
-  
-  folder_name = gsub('_TPM.rda','',TPM_file_list[i])
-  folder_path = paste0("lineage_visualization/tSNE_compare/output_all_datasets/",folder_name )
 
   #------------------------------------
   # [new method: we display the marco and micro(3 lineage) in 2D plot]
 
+setwd("/Users/_alanglanglang/Desktop/PhD-Lab/Cell.lineage.pilot")
+getwd()
+# Loop through all 10 datasets in the sce folder
+TPM_file_list <- list.files(path = "sce", pattern = "_TPM.rda")
+meta_file_list <- list.files(path = "sce", pattern = "_meta.rda")
+  
+for (i in 1:length(TPM_file_list)) {
+  set.seed(123)
+
+  TPM_file = TPM_file_list[i]
+  meta_file = meta_file_list[i]
+  
+  # load data
+  load(file = paste0("sce/", TPM_file))
+  load(file = paste0("sce/", meta_file))
+  
+  # create folder for each datasets
+  folder_name = gsub('_TPM.rda','',TPM_file)
+  folder_path = paste0("lineage_visualization/tSNE_compare/output_all_datasets/",folder_name )
+  
+  ## read from the saved score_df
+  score_df_file = read.csv(paste0(folder_path, "/score_df.csv"))
+  score_df = score_df_file
+  rownames(score_df) = score_df$X
+  
+  
   T8 = ggplot(score_df, aes(x = micro_T8, y = macro_score))+
       geom_point()+
       geom_point(aes(x = score_df[c("FIBP"), "micro_T8"],
@@ -208,6 +233,59 @@ for (i in 1:length(TPM_file_list)) {
     }
   writeLines(top_gene_txt, paste0(folder_path,"/top_gene.txt"))
   
+  #------------------ tSNE - plotting  ------------------
+  
+  ### all
+  sc.matrix.anno.sub <- as.matrix(sc.matrix.anno[!sc.matrix.anno[,"uniformCellTypeSub"]%in%c("Malignant",NA),])
+  sc.matrix.data.sub <- sc.matrix.data[,rownames(sc.matrix.anno.sub)]
+  
+  ## variance normalize, identify overdispersed genes
+  matnorm.info <- normalizeVariance(sc.matrix.data.sub,details=TRUE,verbose=FALSE,alpha=0.05) 
+  
+  ## log transform
+  matnorm <- log10(matnorm.info$mat+1) 
+  
+  ## dimensionality reduction on overdispersed genes
+  pcs <- getPcs(matnorm[matnorm.info$ods,], 
+                nGenes=length(matnorm.info$ods), 
+                nPcs=30, 
+                verbose=FALSE) 
+  
+  perplexityPara = 30
+  
+  ## m= c("micro_T8", "micro_T4", "micro_Myeloid")
+  for (i in 1:3){
+    lineage = m[i]
+    png(paste0(folder_path, "/top_gene_tSNE_",lineage,".png"), width = 1000, height = 400)
+    par(mfrow=c(2,3),mar=rep(0.8,4))
+    
+    ## get tSNE embedding
+    temp <- Rtsne::Rtsne(pcs, 
+                         is_distance=FALSE, 
+                         perplexity=perplexityPara, 
+                         check_duplicates = FALSE,
+                         num_threads=parallel::detectCores(), 
+                         verbose=FALSE)
+    emb <- temp$Y          
+    rownames(emb) <- rownames(pcs)
+    
+    ## markers To Compare (tSNE vs lineage tree)) 
+    sc.matrix.data.log <- log2(sc.matrix.data.sub+1)
+    top4_gene = top_gene[[i]][1:4]
+    
+    markersToCompare = c()
+    markersToCompare <- c("CD8A","FIBP",top4_gene)
+    markersToCompare = markersToCompare[!is.na(markersToCompare)]
+    invisible(lapply(markersToCompare, function(g) {
+      plotEmbedding(emb, color=sc.matrix.data.log[g,], 
+                    main=g, xlab=NA, ylab=NA, 
+                    mark.clusters=TRUE, alpha=0.5, mark.cluster.cex=1, 
+                    show.legend=FALSE,legend.x="topright",
+                    verbose=FALSE) 
+    }))
+    
+    dev.off()
+  }
 }
 
 
