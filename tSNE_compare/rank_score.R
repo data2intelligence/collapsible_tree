@@ -1,5 +1,6 @@
 library(ggplot2)
 library(ggpubr)
+library(ggrepel)
 library(dplyr)
 library(tidyr)
 library(MUDAN)
@@ -12,8 +13,9 @@ getwd()
 TPM_file_list <- list.files(path = "sce", pattern = "_TPM.rda")
 meta_file_list <- list.files(path = "sce", pattern = "_meta.rda")
 
-for (i in 1:length(TPM_file_list)) {
-
+len = length(TPM_file_list)
+# for (i in 1:len) {
+i =1
   TPM_file = TPM_file_list[i]
   meta_file = meta_file_list[i]
   
@@ -60,6 +62,7 @@ for (i in 1:length(TPM_file_list)) {
   
   # *** Modification: remove "Malignant", remove NA, make Plasma a subgroup of B cell ***
   sub_df = subset(sub_df,uniformCellTypeSub!= "Malignant" )
+  sub_df = subset(sub_df,uniformCellTypeSub!= "pDC" )
   # *** [sub_df col: subcelltype, gene_1,....gene_n, sub_size] ***
   # *** dim(sub_df)[2] == length(gene_list)+2 ***
   
@@ -115,14 +118,32 @@ for (i in 1:length(TPM_file_list)) {
   # *** level_3_df --> number of cols = gene list + 3. ***
   
   #------------------ Scoring- macro  ------------------
+
   min_2 = level_3_df %>% filter(level_3 %in% c("T cell","Myeloid") ) %>%
     summarise(across(where(is.numeric), ~min(.x)))
   max_other =  level_3_df %>% filter(!level_3 %in% c("T cell","Myeloid") ) %>%
     summarise(across(where(is.numeric), ~max(.x)))
   
   macro_score = rbind(min_2, max_other)
+  # delete first 2 col: child_num and level_3_size
+  macro_score = macro_score[1:2, 3:(dim(macro_score)[2])] 
   macro_score[3,] = macro_score[1,] -macro_score[2,] 
-  macro_score = t(apply(macro_score, 1, function(x) x/sum(x)))
+  rownames(macro_score) = c("min_2","max_other", "macro_score")
+  # test_macro = macro_score[1:3,1:3]
+  # test_macro_t = t(apply(test_macro, 1, function(x) x/sum(x)))
+  
+  ##### debug: 03/29/23
+  # macro_score_t = t(apply(macro_score, 1, function(x) x/sum(x)))
+  # what does the equation do above:normalize by row(e.g. min2 across all gene)
+  # There is no need to normalize. The scale of value unchanged.So they are comparable.
+  # the errors are made when normalize: negative value / sum(also negative ) = large positve value<- wrong
+  
+  # data = as.data.frame(t(macro_score))
+  # colnames(data) = c("min_2","max_other","macro")
+  # p = ggplot(data, aes(macro)) + geom_histogram(binwidth = 0.05)
+  # png("lineage_visualization/tSNE_compare/output_test_dataset/macro_dist_normalized.png", width = 1000, height = 400)
+  # print(p)
+  # dev.off()
   
   #------------------ Scoring- micro  ------------------
   micro_brch = function(df, cellType){
@@ -145,13 +166,12 @@ for (i in 1:length(TPM_file_list)) {
   micro_brch_df = rbind('micro_T8' = micro_brch(sub_df_remove_size, "T CD8") ,
                         'micro_T4'= micro_brch(sub_df_remove_size, "T CD4"),
                         'micro_Myeloid' = micro_brch_lv3(multi_level_df_remove_size,"Myeloid"))
-  
+  #### skip this part! 
   # normalize every row to 1
-  micro_brch_df = t(apply(micro_brch_df, 1, function(x) x/sum(x)))
+  # micro_brch_df = t(apply(micro_brch_df, 1, function(x) x/sum(x)))
   
-  score_df = rbind(macro_score[3,-c(1,2)], micro_brch_df)
+  score_df = rbind(macro_score, micro_brch_df)
   score_df = as.data.frame(t(score_df))
-  colnames(score_df)[1] = 'macro_score'
   score_df = as.data.frame(score_df)
   
   #------------------------------------
@@ -174,59 +194,46 @@ for (i in 1:length(TPM_file_list)) {
 
   #------------------------------------
   # [new method: we display the marco and micro(3 lineage) in 2D plot]
-
-setwd("/Users/_alanglanglang/Desktop/PhD-Lab/Cell.lineage.pilot")
-getwd()
-# Loop through all 10 datasets in the sce folder
-TPM_file_list <- list.files(path = "sce", pattern = "_TPM.rda")
-meta_file_list <- list.files(path = "sce", pattern = "_meta.rda")
   
-for (i in 1:length(TPM_file_list)) {
-  set.seed(123)
-
-  TPM_file = TPM_file_list[i]
-  meta_file = meta_file_list[i]
-  
-  # load data
-  load(file = paste0("sce/", TPM_file))
-  load(file = paste0("sce/", meta_file))
-  
-  # create folder for each datasets
-  folder_name = gsub('_TPM.rda','',TPM_file)
-  folder_path = paste0("lineage_visualization/tSNE_compare/output_all_datasets/",folder_name )
-  
-  ## read from the saved score_df
-  score_df_file = read.csv(paste0(folder_path, "/score_df.csv"))
-  score_df = score_df_file
-  rownames(score_df) = score_df$X
-  
-  
-  T8 = ggplot(score_df, aes(x = micro_T8, y = macro_score))+
-      geom_point()+
-      geom_point(aes(x = score_df[c("FIBP"), "micro_T8"],
-                   y = score_df["FIBP", "macro_score"], col = "red"))
-  
-  T4 = ggplot(score_df, aes(x = micro_T4, y = macro_score))+
-    geom_point()+
-    geom_point(aes(x = score_df[c("FIBP"), "micro_T4"], 
-                   y = score_df[c("FIBP"), "macro_score"], col = "red"))+ 
-    ggtitle("macro vs lineage score. Marker FIBP in red")
-  
-  Myeloid = ggplot(score_df, aes(x = micro_Myeloid, y = macro_score))+
-    geom_point()+
-    geom_point(aes(x = score_df[c("FIBP"), "micro_Myeloid"], 
-                   y = score_df[c("FIBP"), "macro_score"], col = "red"))
+  # If not reading score_df.csv, skip these 2 lines 
+  # colnames(score_df)[1] = "gene_name"
+  # rownames(score_df) = score_df$gene_name
+  score_df$gene_name = rownames(score_df)
+  p99_macro = quantile(score_df$macro_score, 0.99)
+  options(ggrepel.max.overlaps = Inf)
+  scatter_score = function(score_df, lineage){
+    p99_micro = quantile(score_df[[lineage]], 0.99)
+    reference_df = score_df[c("FIBP", "AOAH"),]
+    top_mtx = filter(score_df, macro_score > p99_macro & !!as.symbol(lineage) > p99_micro) 
+    
+    p = ggplot(score_df, aes(x = !!as.symbol(lineage), y = macro_score))+ geom_point()+
+      geom_point(data = reference_df , aes(x = !!as.symbol(lineage), y = macro_score, color = "red"))+
+      geom_label_repel(data = reference_df , aes(!!as.symbol(lineage),macro_score, label = gene_name), vjust=1)+
+      
+      geom_point(data = top_mtx, aes(x =!!as.symbol(lineage), y = macro_score, color = "red"))+
+      geom_label_repel(data = top_mtx , aes(!!as.symbol(lineage),macro_score, label = gene_name), vjust=1)+
+      theme(legend.position = "none") 
+    
+  }
+  T8 = scatter_score(score_df,"micro_T8")
+  T4 = scatter_score(score_df,"micro_T4")
+  Myeloid = scatter_score(score_df,"micro_Myeloid")
   
   p <- ggarrange(T8, T4, Myeloid, ncol =3, nrow =1 )
-  png(paste0(folder_path,"/score_scatterplot.png"), width = 1000, height = 400)
+  p <- annotate_figure(p, 
+                       top = text_grob("Macro score vs micro score for three linegaes \n Threshold: > quantile 0.99 for both", size = 24))
+  
+  png(paste0(folder_path,"/score_scatterplot.png"), width = 1600, height = 800)
   print(p)
   dev.off()
   
-  m= c("micro_T8", "micro_T4", "micro_Myeloid")
+  lineage_list = c("micro_T8","micro_T4","micro_Myeloid")
+
   top_gene = c()
   top_gene_txt = c()
-  for (lineage in m){
-    top_mtx = filter(score_df, macro_score > 3e-04 & !!as.symbol(lineage) > 3e-04) 
+  for (lineage in lineage_list){
+    p99_micro = quantile(score_df[[lineage]], 0.99)
+    top_mtx = filter(score_df, macro_score > p99_macro & !!as.symbol(lineage) > p99_micro)
     top_gene_list = list(rownames(top_mtx) )
     top_gene =c(top_gene, top_gene_list)
     top_gene_txt = c(top_gene_txt, lineage, rownames(top_mtx),"\n")
@@ -236,58 +243,9 @@ for (i in 1:length(TPM_file_list)) {
   #------------------ tSNE - plotting  ------------------
   
   ### all
-  sc.matrix.anno.sub <- as.matrix(sc.matrix.anno[!sc.matrix.anno[,"uniformCellTypeSub"]%in%c("Malignant",NA),])
-  sc.matrix.data.sub <- sc.matrix.data[,rownames(sc.matrix.anno.sub)]
-  
-  ## variance normalize, identify overdispersed genes
-  matnorm.info <- normalizeVariance(sc.matrix.data.sub,details=TRUE,verbose=FALSE,alpha=0.05) 
-  
-  ## log transform
-  matnorm <- log10(matnorm.info$mat+1) 
-  
-  ## dimensionality reduction on overdispersed genes
-  pcs <- getPcs(matnorm[matnorm.info$ods,], 
-                nGenes=length(matnorm.info$ods), 
-                nPcs=30, 
-                verbose=FALSE) 
-  
-  perplexityPara = 30
-  
-  ## m= c("micro_T8", "micro_T4", "micro_Myeloid")
-  for (i in 1:3){
-    lineage = m[i]
-    png(paste0(folder_path, "/top_gene_tSNE_",lineage,".png"), width = 1000, height = 400)
-    par(mfrow=c(2,3),mar=rep(0.8,4))
-    
-    ## get tSNE embedding
-    temp <- Rtsne::Rtsne(pcs, 
-                         is_distance=FALSE, 
-                         perplexity=perplexityPara, 
-                         check_duplicates = FALSE,
-                         num_threads=parallel::detectCores(), 
-                         verbose=FALSE)
-    emb <- temp$Y          
-    rownames(emb) <- rownames(pcs)
-    
-    ## markers To Compare (tSNE vs lineage tree)) 
-    sc.matrix.data.log <- log2(sc.matrix.data.sub+1)
-    top4_gene = top_gene[[i]][1:4]
-    
-    markersToCompare = c()
-    markersToCompare <- c("CD8A","FIBP",top4_gene)
-    markersToCompare = markersToCompare[!is.na(markersToCompare)]
-    invisible(lapply(markersToCompare, function(g) {
-      plotEmbedding(emb, color=sc.matrix.data.log[g,], 
-                    main=g, xlab=NA, ylab=NA, 
-                    mark.clusters=TRUE, alpha=0.5, mark.cluster.cex=1, 
-                    show.legend=FALSE,legend.x="topright",
-                    verbose=FALSE) 
-    }))
-    
-    dev.off()
-  }
-}
 
+  
+  
 
 
 
