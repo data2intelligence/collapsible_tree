@@ -1,9 +1,9 @@
 
 function collapsible_tree(input_data, search_gene, location1, path_to_icon_folder) {
     // Set the dimensions and margins of the diagram
-    var margin = { top: 100, right: 150, bottom: 500, left: 150 };
-    (width = 2000 - margin.left - margin.right),
-        (height = 1800 - margin.top - margin.bottom);
+    var margin = { top: 100, right: 150, bottom: 350, left: 150 };
+    (width = 1800 - margin.left - margin.right),
+        (height = 1500 - margin.top - margin.bottom);
 
     // append the svg object to the body of the page
     // appends a 'group' element to 'svg'
@@ -53,7 +53,7 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
             .tree()
             .size([innerHeight * 0.7, innerWidth * 0.7])
             .separation(function (a, b) {
-                return a.parent == b.parent ? 1 : 3;
+                return a.parent == b.parent ? 1 : 2.5;
             })(root);
 
         // Recursively get the weighted avg of expression level for each node.
@@ -219,10 +219,11 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
 
         // ****** Color scale ********
         // Scale the [0, expr_max] to [0,1]
-        const scale0_1 = d3.scaleLinear().domain([0, expr_max]).range([0, 1]);
+        const scale0_1 = d3.scaleLinear().domain([0, expr_max]).range([-1, 1]);
 
         // Set the color style of links
         var color_scale = chroma.scale(["#f8cece", "#C70000"]);
+        // var color_scale = chroma.scale(["white", "red"]);
 
         // Set the "fill" funtion, which will be applied to "link.style()".
         const fill = (d) => {

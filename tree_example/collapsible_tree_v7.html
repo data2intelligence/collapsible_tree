@@ -14,10 +14,11 @@
 
     <script src="collapsible_tree_v7.js"></script>
 
-
     <script>
-      const search_gene = "CD8A"; 
-      const input_data = "data/structure_expr_no_weighted.csv"; 
+      const search_gene = "PDCD1";  
+      const input_data = "data/input_all_10/structure_expr_E-MTAB-6149_NSCLC.csv"; 
+      // const input_data = "data/input_all_10/structure_expr_GSE103322_HNSCC.csv"; 
+      
       // where to append your tree. It can be selected by tag, class name, or ID. 
       // Format: select("tag"), select(".classname"), select("#ID")
       const location1 = "body";
@@ -25,7 +26,7 @@
       // local icon folder: [old]
       // const path_to_icon_folder = "data/CellTypeIcon_separate/";  
       
-      // online pathto icons
+      // online path to icons
       const path_to_icon_folder = "https://hpc.nih.gov/~Jiang_Lab/Lineage/";
                                   
       collapsible_tree(input_data, search_gene, location1, path_to_icon_folder);
