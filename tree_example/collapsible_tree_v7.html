@@ -15,16 +15,12 @@
     <script src="collapsible_tree_v7.js"></script>
 
     <script>
-      const search_gene = "PDCD1";  
-      const input_data = "data/input_all_10/structure_expr_E-MTAB-6149_NSCLC.csv"; 
-      // const input_data = "data/input_all_10/structure_expr_GSE103322_HNSCC.csv"; 
+      const search_gene = "IFI6";  
+      const input_data = "data/input_html_all_10_datasets/structure_expr_E-MTAB-6149_NSCLC.csv"; 
       
       // where to append your tree. It can be selected by tag, class name, or ID. 
       // Format: select("tag"), select(".classname"), select("#ID")
       const location1 = "body";
-
-      // local icon folder: [old]
-      // const path_to_icon_folder = "data/CellTypeIcon_separate/";  
       
       // online path to icons
       const path_to_icon_folder = "https://hpc.nih.gov/~Jiang_Lab/Lineage/";
@@ -32,39 +28,7 @@
       collapsible_tree(input_data, search_gene, location1, path_to_icon_folder);
 
     </script>
-    <button type="button" id="saveSvg-button" onclick="saveSvg()" 
-    style="height: 100px; width: 200px; font-weight: bold; font-size: larger">Save as SVG</button>    
  </body>
-
-<script>
-
-  function saveSvg() {
-    var svgEl = document.getElementsByTagName("svg")[0];
-    svgEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    svgEl.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-
-    var defs1 = document.createElement("defs");
-    defs1.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-    defs1.innerHTML = "<style type=\"text/css\"><![CDATA[.node circle { fill: rgb(255, 255, 255); }.node text { font: 18px sans-serif; }.link { fill: none; stroke: rgb(204, 204, 204); stroke-width: 2px; }]]></style>\n"
-
-    svgEl.append(defs1);
-
-    var svgData = svgEl.outerHTML;
-
-    var preface = '<?xml version="1.0" standalone="no"?>\r\n';
-    // var style = '<style>circle{fill: : #fff}text{font:18px sans-serif}link{fill: none; stroke:#ccc; stroke-width: 2px}</style>'
-    var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
-    var svgUrl = URL.createObjectURL(svgBlob);
-    var downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = "graph_test.svg";
-
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  }
-
-</script>
 
 </html>
 

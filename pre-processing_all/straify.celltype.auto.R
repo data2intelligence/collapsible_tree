@@ -50,10 +50,10 @@ stratify.original.major = data.frame(
 
 
 stratify.extra = data.frame(
-  parent = c("Lymphoid Progenitor", "Stem Cell","Myeloblast","Stem Cell",
+  parent = c("Lymphoid Progenitor", "Blood Stem Cell","Myeloblast","Blood Stem Cell",
             "Myeloid Progenitor","Root","Root",NA, "Myeloblast","T CD8"),
   name = c('T cell',"Myeloid Progenitor", "Monocyte","Lymphoid Progenitor",
-           "Myeloblast","undecided","Stem Cell","Root", "Neutrophil","T CD8 naive")
+           "Myeloblast","undecided","Blood Stem Cell","Root", "Neutrophil","T CD8 naive")
 )
 
 # Concatenate 3 stratify dfs

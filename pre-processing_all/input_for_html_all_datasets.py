@@ -44,5 +44,5 @@ for root, dirs, files in os.walk(data_folder_dir):
 
             structure_expr_whole = pd.concat([structure_expr, structure_non_leaf])
 
-            structure_expr_whole.to_csv("pre-processing_all/structure_expr_" + dataset_name + ".csv")
+            structure_expr_whole.to_csv("tree_example/data/input_html_all_10_datasets/structure_expr_" + dataset_name + ".csv")
             # structure_expr.to_csv("tree_example/data/structure_expr_" + dataset_name+ ".csv")

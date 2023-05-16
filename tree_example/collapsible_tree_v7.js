@@ -63,6 +63,35 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
         // root.children.forEach(collapse);
         update(root);
 
+        // Add legend for color scale
+        var legend = document.createElement("canvas");
+        document.body.appendChild(legend);
+        legend.setAttribute("id", "legend");
+        legend.style.width = "120px";
+        legend.style.height = "70px";
+
+        const ctx = legend.getContext('2d');
+
+        legend.style.position = "absolute";
+        legend.style.top = "750px";
+        legend.style.left = "100px";
+
+        // Define the gradient fill
+        const gradient = ctx.createLinearGradient(0, 0, 200, 0);
+        gradient.addColorStop(0, "#F0D8D8");
+        gradient.addColorStop(0.5, '#FF7F7F');
+        gradient.addColorStop(1, '#F01818');
+
+        // Draw the rectangle with the gradient fill
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 200, 50);
+
+        var textElement = document.createElement("div");
+        textElement.innerHTML = '0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + expr_max;
+        textElement.style.position = "absolute";
+        textElement.style.top = "772px";
+        textElement.style.left = "100px";
+        document.body.appendChild(textElement);
 
     });
 
@@ -222,7 +251,7 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
         const scale0_1 = d3.scaleLinear().domain([0, expr_max]).range([-1, 1]);
 
         // Set the color style of links
-        var color_scale = chroma.scale(["#f8cece", "#C70000"]);
+        var color_scale = chroma.scale(["#F0D8D8", "#F01818"]);
         // var color_scale = chroma.scale(["white", "red"]);
 
         // Set the "fill" funtion, which will be applied to "link.style()".
@@ -241,7 +270,7 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
             })
             .style("stroke", fill)
             .style("stroke-width", function (d) {
-                return d.data.data[search_gene] * 0.5 + 2.5;
+                return d.data.data["celltype_size"] * 0.0004 + 3.5;
             })
             .style("stroke-opacity", 0.7);
 
