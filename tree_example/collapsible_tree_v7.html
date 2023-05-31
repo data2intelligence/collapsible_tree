@@ -16,7 +16,7 @@
 
     <script>
       const search_gene = "IFI6";  
-      const input_data = "data/input_html_all_10_datasets/structure_expr_E-MTAB-6149_NSCLC.csv"; 
+      const input_data = "data/input_html_all_10_datasets/structure_expr_GSE146771_CRC_10x.csv"; 
       
       // where to append your tree. It can be selected by tag, class name, or ID. 
       // Format: select("tag"), select(".classname"), select("#ID")
@@ -24,6 +24,7 @@
       
       // online path to icons
       const path_to_icon_folder = "https://hpc.nih.gov/~Jiang_Lab/Lineage/";
+      // const path_to_icon_folder = "data/CellTypeIcon_separate/"
                                   
       collapsible_tree(input_data, search_gene, location1, path_to_icon_folder);
 

@@ -3,7 +3,7 @@ import pandas as pd
 
 os.chdir("/Users/ygao61/Desktop/PhD-Lab/Cell.lineage.pilot/lineage_visualization")
 # load structure file
-structure = pd.read_csv("pre-processing_all/all.stratify.anno.auto.csv")
+structure = pd.read_csv("pre-processing_all/all.stratify.anno.auto.reordered.csv")
 # load mean expression data
 data_folder_dir = "tSNE_compare/output_target_score/origin_output"
 print('data_folder_dir', data_folder_dir)
