@@ -1,0 +1,35 @@
+{% extends "main/home.html" %}
+
+{% block content %}  
+
+{% load crispy_forms_tags %}  
+   
+        <div class="container">
+          <p> here</p>
+          <!--Django Form-->
+          <h2 class="my-4">Add a new movie</h2>
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+              {{form|crispy}}
+                <button class="btn btn-dark my-4" type="submit">Submit</button>
+          </form>
+
+        <!--Django Model-->
+        <h2 class="my-4">Movies</h2>
+        <div class="row">
+          {% for m in movies %}
+          <div class="col-lg-4 col-md-6 col-sm-12 pb-4">
+            <div class="card h-100 p-4">
+              <img src="{{ m.image.url }}" class="card-img-top">
+              <a href="/media/{{m.file}}">View Script</a>
+            </div>
+          </div>
+          {% empty %}
+          <p>No movies added.</p>
+          {% endfor %}
+        </div>
+
+      </div>
+    
+
+{% endblock %}

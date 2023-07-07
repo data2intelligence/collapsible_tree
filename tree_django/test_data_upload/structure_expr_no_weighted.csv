@@ -1,0 +1,40 @@
+,parent,id,label,CD8A,FIBP,NOC2L,ISG15,AURKAIP1,MRPL20,celltype_size
+0,B cell,B cell exhausted,exhausted,1.89,3.83,2.75,5.46,4.05,3.91,826.0
+1,B cell,B cell naive,naive,0.37,3.7,2.98,4.2,3.94,3.58,233.0
+2,B cell,B cell non-switched memory,non-switched memory,0.85,3.08,2.92,4.89,3.79,3.83,624.0
+3,B cell,B cell switched memory,switched memory,0.91,3.5,2.12,5.11,3.96,4.12,787.0
+4,cDC,cDC1 CLEC9A,cDC1 CLEC9A,0.6,3.78,2.07,5.75,4.32,4.47,49.0
+5,cDC,cDC2 CD1C,cDC2 CD1C,0.0,5.11,0.0,4.82,5.35,2.54,5.0
+6,cDC,cDC3 LAMP3,cDC3 LAMP3,0.61,3.22,1.21,6.02,3.53,3.94,35.0
+7,Macrophage,Macrophage M1,M1,0.45,3.5,1.48,8.99,4.55,3.94,1100.0
+8,Macrophage,Macrophage M2,M2,1.01,3.49,1.67,6.82,4.27,4.02,1806.0
+9,T CD4,T CD4 naive,naive,0.0,2.37,2.28,4.67,3.75,2.5,39.0
+10,T CD8,T CD8 central memory,central memory,6.19,3.16,2.69,5.52,4.22,4.14,980.0
+11,T CD8,T CD8 effector,effector,5.98,3.41,2.77,5.9,4.4,4.16,2130.0
+12,T CD8,T CD8 effector memory,effector memory,6.45,3.31,2.65,6.12,4.4,4.21,3734.0
+13,T CD8,T CD8 exhausted,exhausted,6.69,3.78,2.87,7.9,4.53,4.26,4105.0
+14,T CD4,Tfh,Tfh,1.86,2.49,2.51,5.58,4.11,3.92,1417.0
+15,T CD4,Th1,Th1,3.09,2.67,2.48,6.08,4.11,4.07,3048.0
+16,T CD4,Th17,Th17,0.8,2.55,2.83,5.69,3.92,3.87,856.0
+17,T CD4,Th2,Th2,1.22,2.78,2.4,5.91,3.7,4.19,710.0
+18,T CD4,Treg,Treg,1.96,3.34,2.49,7.34,4.43,4.36,1287.0
+19,T cell,T CD4,T CD4,,,,,,,
+20,T cell,T CD8,T CD8,,,,,,,
+21,Myeloid Progenitor,Mast,Mast,0.59,3.79,1.99,4.65,4.18,3.9,429.0
+22,undecided,Endothelial,Endothelial,0.7,3.44,2.61,5.32,4.58,4.56,806.0
+23,Monocyte,Macrophage,Macrophage,,,,,,,
+24,undecided,Plasma,Plasma,2.11,2.68,2.85,6.65,5.51,4.86,1211.0
+25,undecided,CAF,CAF,1.25,3.31,2.68,5.39,4.31,4.18,1194.0
+26,Lymphoid Progenitor,B cell,B cell,,,,,,,
+27,Dendritic Cell,cDC,cDC,,,,,,,
+28,Lymphoid Progenitor,NK,NK,4.86,3.29,2.74,4.81,4.3,4.07,739.0
+29,Dendritic Cell,pDC,pDC,0.0,3.22,2.75,6.02,4.41,3.28,65.0
+30,Lymphoid Progenitor,T cell,T cell,,,,,,,
+31,Stem Cell,Myeloid Progenitor,Myeloid Progenitor,,,,,,,
+32,Myeloblast,Monocyte,Monocyte,,,,,,,
+33,Stem Cell,Lymphoid Progenitor,Lymphoid Progenitor,,,,,,,
+34,Monocyte,Dendritic Cell,Dendritic Cell,,,,,,,
+35,Myeloid Progenitor,Myeloblast,Myeloblast,,,,,,,
+36,Root,undecided,undecided,,,,,,,
+37,Root,Stem Cell,Stem Cell,,,,,,,
+38,,Root,Root,,,,,,,
