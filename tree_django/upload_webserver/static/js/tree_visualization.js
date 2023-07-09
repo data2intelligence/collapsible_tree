@@ -1,11 +1,14 @@
 
 function collapsible_tree(input_data, search_gene, location1, path_to_icon_folder) {
-    // Set the dimensions and margins of the diagram
-    var margin = { top: 100, right: 100, bottom: 350, left: 150 };
-    (width = 1700 - margin.left - margin.right),
-        (height = 1500 - margin.top - margin.bottom);
+    // Set the dimensions and margins of the tree diagram
+    var margin = { top: 100, right: 100, bottom: 150, left: 150 };
+    (width = 1500 - margin.left - margin.right),
+        (height = 800 - margin.top - margin.bottom);
 
-    // append the svg object to the body of the page
+    var svg_container = document.getElementById("svg_container");
+    svg_container.style.width = width + margin.right + margin.left + 100;
+    svg_container.style.height = height + margin.top + margin.bottom + 100;
+    // append the svg object to the page
     // appends a 'group' element to 'svg'
 
     var svg = d3
@@ -34,7 +37,7 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
         };
         expr_max = Math.max.apply(null, expr_value_array);
 
-        // d3.stratify(): convert the 2 columns in the .csv file to a nested structure. A built-in function in d3.
+        // d3.stratify(): convert the 2 columns in the .csv file to a nested structure.
         var stratify = d3
             .stratify()
             .id((d) => d.id)
@@ -42,19 +45,18 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
 
         treeData = stratify(data);
 
-        // d3.hierarchy(): assigns parent, children, height, depth. A built-in function in d3.
+        // d3.hierarchy(): assigns parent, children, height, depth.
         root = d3.hierarchy(treeData);
 
-        console.log(root);
         root.x0 = height / 2;
         root.y0 = 0;
 
-        // d3.tree(): generate a hierarchical tree.  A built-in function in d3.
+        // d3.tree(): generate a hierarchical tree.
         root = d3
             .tree()
-            .size([height * 0.7, width * 0.9])
+            .size([height * 0.9, width * 0.9])
             .separation(function (a, b) {
-                return a.parent == b.parent ? 1 : 2.5;
+                return a.parent == b.parent ? 1 : 1.5;
             })(root);
 
         // Recursively get the weighted avg of expression level for each node.
@@ -64,35 +66,38 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
         // root.children.forEach(collapse);
         update(root);
 
-        // Add legend for color scale
-        var legend = document.createElement("canvas");
-        document.body.appendChild(legend);
-        legend.setAttribute("id", "legend");
-        legend.style.width = "120px";
-        legend.style.height = "70px";
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add legend for color scale
+            var legend = document.createElement("canvas");
+            // var legend_container = document.getElementById('legend_container');
+            document.body.appendChild(legend);
+            legend.setAttribute("id", "legend");
+            legend.style.width = "120px";
+            legend.style.height = "70px";
 
-        const ctx = legend.getContext('2d');
+            const ctx = legend.getContext('2d');
 
-        legend.style.position = "absolute";
-        legend.style.top = "750px";
-        legend.style.left = "100px";
+            legend.style.position = "absolute";
+            legend.style.top = "700px";
+            legend.style.left = "200px";
 
-        // Define the gradient fill
-        const gradient = ctx.createLinearGradient(0, 0, 200, 0);
-        gradient.addColorStop(0, "#F0D8D8");
-        gradient.addColorStop(0.5, '#FF7F7F');
-        gradient.addColorStop(1, '#F01818');
+            // Define the gradient fill
+            const gradient = ctx.createLinearGradient(0, 0, 200, 0);
+            gradient.addColorStop(0, "#F0D8D8");
+            gradient.addColorStop(0.5, '#FF7F7F');
+            gradient.addColorStop(1, '#F01818');
 
-        // Draw the rectangle with the gradient fill
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 200, 50);
+            // Draw the rectangle with the gradient fill
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 200, 50);
 
-        var textElement = document.createElement("div");
-        textElement.innerHTML = '0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + expr_max;
-        textElement.style.position = "absolute";
-        textElement.style.top = "772px";
-        textElement.style.left = "100px";
-        document.body.appendChild(textElement);
+            var textElement = document.createElement("div");
+            textElement.innerHTML = '0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + expr_max;
+            textElement.style.position = "absolute";
+            textElement.style.top = "732px";
+            textElement.style.left = "200px";
+            document.body.appendChild(textElement);
+        });
 
     };
 
@@ -172,7 +177,7 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
             .attr("text-anchor", function (d) {
                 return d.children || d._children ? "end" : "start";
             })
-            .style("font-size", "25px")
+            .style("font-size", "18px")
             .text(function (d) {
                 return d.data.data.label;
             });
@@ -187,8 +192,8 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
                 return imagePath;
             })
             .attr("transform", "translate (-12,-13)")
-            .attr("width", "30px")
-            .attr("height", "30px");
+            .attr("width", "27px")
+            .attr("height", "27px");
 
         // UPDATE
         var duration = 750;

@@ -17,8 +17,8 @@
 
     <script src="{% static 'js/tree_visualization.js' %}"></script>
     <div class="container">
+      <br>
       <div class="row">
-        <div class="col-sm-12">
           <div class="col-sm-4">
             <div class="button_container">
               <a href="{% url 'main:upload_page' %}" class="btn btn-outline-primary" role="button">Go back to Upload Page</a>
@@ -28,12 +28,12 @@
             <h3> Dataset title: {{dataset_title}}</h3>
             <h4> Gene you search: {{search_gene}}</h4>
           </div>
-        </div>
 
       </div>
 
       <div class="row">
-        <div class="col" id="svg_container"></div>
+        <div class="col" id="svg_container"  ></div>
+      </div>
 
       </div>
     </div>
