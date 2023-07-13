@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+django-extensions = ">=2.1.0"
+django-livereload-server = "*"
+werkzeug = "*"  # required to use runserver_plus
+ipython = "*"
+
+[packages]
+Django = "~=4.2"
+crispy-bootstrap4 = "*"
