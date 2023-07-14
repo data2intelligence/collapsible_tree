@@ -5,8 +5,9 @@ from .forms import CSVUploadForm
 from django import forms
 from django.contrib import messages
 import csv
-from io import TextIOWrapper
-from io import StringIO
+from io import TextIOWrapper, StringIO
+import markdown
+import os
 
 
 def upload_page(request):
@@ -19,8 +20,8 @@ def upload_page(request):
 
         if csv_form.is_valid():  
             dataset_title = csv_form.cleaned_data['dataset_title']
-            search_gene = csv_form.cleaned_data['search_gene']
-
+            search_column = csv_form.cleaned_data['search_column']
+            icon_folder = csv_form.cleaned_data['icon_folder']
             csv_file = request.FILES['csv_file']
             decoded_file = csv_file.read().decode('utf-8')
             IO_file = StringIO(decoded_file)
@@ -57,13 +58,21 @@ def upload_page(request):
 
             if error_count == 0:
                 messages.success(request, (f"Congradualations! \n Your data file named '{dataset_title}' was successfully added!"))
-                return render(request, 'main/tree_visualization.html', {'dataset_title':dataset_title, 'search_gene':search_gene, 'data': data})
+                return render(request, 'main/tree_visualization.html',
+                 {'dataset_title':dataset_title, 'search_column':search_column, 'icon_folder':icon_folder,'data': data})
                 
             else:
                 return render(request=request, template_name="main/upload.html", context={'csv_form': csv_form, 'csv_file': csv_file})
     
 
     return render(request=request, template_name="main/upload.html", context={'csv_form': csv_form, 'csv_file': csv_file})
+
+def markdown_view(request):
+    path_to_md = os.path.join(settings.STATICFILES_DIRS[0], 'markdown/help_doc.md')
+    with open(path_to_md, 'r') as file:  
+        markdown_content = file.read()
+        html_content = markdown.markdown(markdown_content)
+    return render(request, 'main/markdown_view.html', {'content': html_content})
 
 
 def is_number(value):

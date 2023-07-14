@@ -7,5 +7,5 @@ import csv
 class CSVUploadForm(forms.ModelForm):
         class Meta:
             model = CSVUpload
-            fields = ('dataset_title','search_gene','csv_file')
+            fields = ('dataset_title','search_gene','icon_folder','csv_file')
         

@@ -5,7 +5,14 @@
   <meta charset="UTF-8" />
   <header>
     <title>Collapsible tree</title> 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+    <link
+    href="https://getbootstrap.com/docs/5.3/assets/css/docs.css"
+    rel="stylesheet"
+  />
     <link rel="stylesheet" href="{% static 'css/tree_visualization.css' %}" />
   </header>
 
@@ -16,17 +23,37 @@
     <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
 
     <script src="{% static 'js/tree_visualization.js' %}"></script>
-    <div class="container">
-      <br>
-      <div class="row">
-          <div class="col-sm-4">
-            <div class="button_container">
-              <a href="{% url 'main:upload_page' %}" class="btn btn-outline-primary" role="button">Go back to Upload Page</a>
-            </div>
+    <div class="container-fluid" >
+      <nav class="navbar navbar-expand-lg bg-primary-subtle">
+        <div class="container-fluid">
+          <a class="navbar-brand mb-0 h1" href="#">Collapsible Tree</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'main:upload_page' %}">Upload</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'main:markdown_view' %}">Documentation</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="https://github.com/data2intelligence/lineage_visualization">GitHub</a>
+              </li>
+            </ul>
           </div>
-          <div class="col-md-8">
-            <h3> Dataset title: {{dataset_title}}</h3>
-            <h4> Gene you search: {{search_gene}}</h4>
+        </div>
+      </nav>
+
+      <br>
+      <div style="text-align: justify;">
+        <div class="row">
+
+          <div class="col-md-8 offset-md-2">
+            <h4> Dataset title: {{dataset_title}}</h4>
+            <h5> Column you search: {{search_column}}</h5>
           </div>
 
       </div>
@@ -36,27 +63,36 @@
       </div>
 
       </div>
+      
+
+      </div>
     </div>
 
     <script type="text/javascript">
 
-      const search_gene = '{{search_gene}}';
+      const search_column = '{{search_column}}';
 
       var dataStr = '{{data}}'.replace(/&#x27;/g, '"');
       var newStr = JSON.parse(dataStr);
-      const input_data =  newStr;       
+      const input_data =  newStr;   
+      var path_to_icon_folder;
 
       // where to append your tree. It can be selected by tag, class name, or ID. 
       // Format: select("tag"), select(".classname"), select("#ID")
       const location1 = "#svg_container";
 
-      const path_to_icon_folder = "https://hpc.nih.gov/~Jiang_Lab/Lineage/";
-      // const path_to_icon_folder = "data/CellTypeIcon_separate/"
+      if ('{{icon_folder}}'){
+        path_to_icon_folder = '{{icon_folder}}';
+      }
+      else{
+        path_to_icon_folder = "https://hpc.nih.gov/~Jiang_Lab/Lineage/";
+      }
 
-      collapsible_tree(input_data, search_gene, location1, path_to_icon_folder);
+      collapsible_tree(input_data, search_column, location1, path_to_icon_folder);
 
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
  </body>
 
