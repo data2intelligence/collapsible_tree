@@ -1,30 +1,30 @@
-# Lineage Visualization
+## Lineage Visualization
 
-### We provide a web interface(domain name TBD) that enables researchers to query gene expression values in our pre-processed data at Tres (https://resilience.ccr.cancer.gov) and display the cell lineage in a tree-like strcuture. For developers, here is a highly customizable javascript library, which is can be easily tailored to accommodate different structures or purposes. 
+#### We provide a web interface(domain name TBD) that enables researchers to query gene expression values in our pre-processed data at Tres (https://resilience.ccr.cancer.gov).  
 
 Users can easily visualize expression data in a hieracrhical way. The gene expression levels across different cell types are mapped on to a knowledge-based cell lineage structure. 
 The hierarchical tree strcuture facilitates the exploration and interpretation of the data.
 
----
+#### For developers, here is a highly customizable javascript library, which can be easily tailored to different structures or purposes.
+
+
 **Tree layout**
 ---
 There are two different layouts available, and both are collapsible :
-1. Horizontal tree. (D3.js version 7)
-2. Radial tree. (D3.js version5)
-    * Users can use the slider to rotate the tree.
+1. Horizontal tree. 
+2. Radial tree.
 3. We apply color scale to edges based on the expression level and the width of edge are proportional to it as well.
 
 Preview:
 * Horizontal tree
 
-<img src= "tree_example/data/preview_image/horizontal_tree.png" width = "480" height= "300">
+    <img src= "tree_example/data/preview_image/horizontal_tree.png" width = "500" height= "300">
 
 * Radial tree
 
-<img src= "tree_example/data/preview_image/radial_tree.png" 
-width = "480" height= "300">
+    <img src= "tree_example/data/preview_image/radial_tree.png" width = "500" height= "300">
 
----
+
 **How to use**
 ---
 Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/lineage_visualization/tree/main/tree_example) folder.
@@ -39,9 +39,8 @@ Then you can pass these arguments and call the master function(s) to generate a 
 
 Please see detailed information below.
 
----
 ### **How to prepare your input data**
-
+---
 For general purpose, your input data would be a **.csv** file which contains three parts: child-parent relationship, values for features you want to display, and the size of each child node.
 
 In the **.csv** file, the first two column "parent" and "id" are used to represent the child-parent relationship. Each child node, except the root, should a parent node. The root should have no value for their "parent" column. The "id" is reuiqred to be unique, whereas you can use duplicated "label"s for nodes when labeling the node in the diagram. The "size" column is used to calculate the weighted average if each node have different number of data points. For other columns, you could store values for any features that you are going to visualize in the tree structure.
