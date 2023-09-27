@@ -13,16 +13,17 @@ The hierarchical tree strcuture facilitates the exploration and interpretation o
 There are two different layouts available, and both are collapsible :
 1. Horizontal tree. 
 2. Radial tree.
-3. We apply color scale to edges based on the expression level and the width of edge are proportional to it as well.
+
+We apply color scale to edges based on the expression level and the width of edge are proportional to it as well.
 
 Preview:
 * Horizontal tree
 
-    <img src= "tree_example/data/preview_image/horizontal_tree.png" width = "500" height= "300">
+    <img src= "tree_example/data/preview_image/horizontal_tree.png" width = "650" height= "350">
 
 * Radial tree
 
-    <img src= "tree_example/data/preview_image/radial_tree.png" width = "500" height= "300">
+    <img src= "tree_example/data/preview_image/radial_tree.png" width = "650" height= "350">
 
 
 **How to use**
@@ -84,7 +85,6 @@ T CD8,T CD8 effector,effector,5.98,2130.0
 3. Next column(s) should be gene expression level. Here we use "CD8A" gene as an example. You could have as many columns as you want here.
 4. The last column is the number of cells in certain cell type.
     * Expression values and size of celltype are required for leaf nodes, while we provide a recursive function to calculate the weighted average expression level for root node and all internal nodes.
-
 
 **Download and edit the image**
 ---
