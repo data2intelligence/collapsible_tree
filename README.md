@@ -1,11 +1,11 @@
 ## Lineage Visualization
 
-#### We provide a web interface(domain name TBD) that enables researchers to query gene expression values in our pre-processed data at Tres (https://resilience.ccr.cancer.gov).  
+#### We provide a web interface(http://lineagetree.cbcb.umd.edu) that enables researchers to query gene expression values in our pre-processed data at Tres (https://resilience.ccr.cancer.gov).  
 
-Users can easily visualize expression data in a hieracrhical way. The gene expression levels across different cell types are mapped on to a knowledge-based cell lineage structure. 
+Users could easily visualize expression data in a hieracrhical way. The gene expression levels across different cell types are mapped on to a knowledge-based cell lineage structure. 
 The hierarchical tree strcuture facilitates the exploration and interpretation of the data.
 
-#### For developers, here is a highly customizable javascript library, which can be easily tailored to different structures or purposes.
+#### For developers, this is a highly customizable javascript library, which could be easily tailored to different structures or purposes.
 
 
 **Tree layout**
@@ -30,13 +30,13 @@ Preview:
 ---
 Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/lineage_visualization/tree/main/tree_example) folder.
 
-In brief, you can load the JavaScript file as a library, along with other libraries(e.g. d3 library). We wrapped up the visulization function to two **master functions** for  horizontal and radial tree. Both have four arguments: 
+In brief, you could load the JavaScript file as a library, along with other libraries(e.g. d3 library). We wrapped up the visulization function to **two master functions** for horizontal and radial trees. Both of them have four arguments: 
 * input_data: path to input data (gene expression level and child-parent relationship).
-* search_gene: name of the gene(feature) you want to search with.
-* location1: where you want to append the diagram.
+* search_gene: name of the gene(feature) you would like to search.
+* location1: where you would like to append the diagram to.
 * path_to_icon_folder: path to the icon image folder.
 
-Then you can pass these arguments and call the master function(s) to generate a hierarchical tree.
+Then you could pass these arguments and call the master function(s) to generate a hierarchical tree.
 
 Please see detailed information below.
 
@@ -44,7 +44,7 @@ Please see detailed information below.
 ---
 For general purpose, your input data would be a **.csv** file which contains three parts: child-parent relationship, values for features you want to display, and the size of each child node.
 
-In the **.csv** file, the first two column "parent" and "id" are used to represent the child-parent relationship. Each child node, except the root, should a parent node. The root should have no value for their "parent" column. The "id" is reuiqred to be unique, whereas you can use duplicated "label"s for nodes when labeling the node in the diagram. The "size" column is used to calculate the weighted average if each node have different number of data points. For other columns, you could store values for any features that you are going to visualize in the tree structure.
+In the **.csv** file, the first two column "parent" and "id" are used to represent the child-parent relationship. Each child node, except the root, should a parent node. The root should have no value for their "parent" column. The "id" is reuiqred to be unique, whereas you could use duplicated "label"s for nodes when labeling the node in the diagram. The "size" column is used to calculate the weighted average if each node have different number of data points. For other columns, you could store values for any features that you are going to visualize in the tree structure.
 
 We will use scRNA sequencing data as an example to show that how to format the input data:
 
@@ -88,6 +88,6 @@ T CD8,T CD8 effector,effector,5.98,2130.0
 
 **Download and edit the image**
 ---
-For both layouts, we provide a download button to download the svg image. You will open `open` -> `open with Google Chrome` (Or any other browser you are using) to view the image. Since we use the online source for the cell type icons, we need the browser to render the complete image. Then `right click` -> `print`, you could download the svg in `pdf`, which enables you to edit the diagram in editor software, like InkScape. You can drag the icons, modify the text.
+For both layouts, we provide a download button to download the svg image. You will open `open` -> `open with Google Chrome` (Or any other browser you are using) to view the image. Since we use the online source for the cell type icons, we need the browser to render the complete image. Then `right click` -> `print`, you could download the svg in `pdf`, which enables you to edit the diagram in editor software, like InkScape. You could drag the icons, modify the text.
 
-P.S. If you use icons from a local folder, you can move the svg to the folder according to the path you used in your JS script. 
+P.S. If you use icons from a local folder, you could move the svg to the folder according to the path you used in your JS script. 
