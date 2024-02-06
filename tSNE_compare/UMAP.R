@@ -20,14 +20,6 @@ mtx.data <- CreateSeuratObject(counts = sc.matrix.data.sub, project = "sce")
 
 mtx.data <- NormalizeData(mtx.data, normalization.method = "LogNormalize", scale.factor = 10000)
 
-# ??? diff pre-process in tSNE and UMAP
-
-# ## variance normalize, identify overdispersed genes
-# matnorm.info <- normalizeVariance(sc.matrix.data.sub,details=TRUE,verbose=FALSE,alpha=0.05) 
-# 
-# ## log transform
-# matnorm <- log10(matnorm.info$mat+1)
-
 # feature selection
 mtx.data <- FindVariableFeatures(mtx.data, selection.method = "vst", nfeatures = 2000)
 
