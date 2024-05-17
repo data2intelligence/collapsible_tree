@@ -56,26 +56,26 @@ We will use scRNA sequencing data as an example to show that how to format the i
 
 2. Integrate your gene expression data with meta data.
 
-    |parent|id|label|CD8A|celltype_size|
-    |-----|--|-----|----|-------------|
-    ||T cell|T cell|||
-    |T cell|T CD4|T CD4|||
-    |T cell|T CD8|T CD8|||
-    |T CD4|T CD4 naive|naive|0.0|39.0|
-    |T CD4|Th1|Th1|3.09|3048|
-    |T CD8|T CD8 central memory|central memory|6.19|980.0|
-    |T CD8|T CD8 effector|effector|5.98|2130.0|
+    |parent|id|leaf_node|label|CD8A|celltype_size|
+    |------|--|---------|-----|----|-------------|
+    ||T cell|non_leaf|T cell|||
+    |T cell|T CD4|non_leaf|T CD4|||
+    |T cell|T CD8|non_leaf|T CD8|||
+    |T CD4|T CD4 naive|leaf_node|naive|0.0|39.0|
+    |T CD4|Th1|leaf_node|Th1|3.09|3048|
+    |T CD8|T CD8 central memory|leaf_node|central memory|6.19|980.0|
+    |T CD8|T CD8 effector|leaf_node|effector|5.98|2130.0|
 
 Prepare your data as a **.csv** file.
 ```
 parent,id,label,CD8A,celltype_size
-,T cell,T cell,,,
-T cell,T CD4,T CD4,,,
-T cell,T CD8,T CD8,,,
-T CD4,T CD4 naive,naive,0.0,39.0
-T CD4,Th1,Th1,3.09,3048.0
-T CD8,T CD8 central memory,central memory,6.19,980.0
-T CD8,T CD8 effector,effector,5.98,2130.0
+,T cell,non_leaf,T cell,,,
+T cell,T CD4,non_leaf,T CD4,,,
+T cell,T CD8,non_leaf,T CD8,,,
+T CD4,T CD4 naive,leaf_node,naive,0.0,39.0
+T CD4,Th1,leaf_node,Th1,3.09,3048.0
+T CD8,T CD8 central memory,leaf_node,central memory,6.19,980.0
+T CD8,T CD8 effector,leaf_node,effector,5.98,2130.0
 ```
 1.  The "parent" and "id" are two columns that represent the relationship of parent-child pairs, which are required to generate the hierarchical tree.
     * As shown in the first row, "T cell" is the root node which does not have a "parent". The structure should have and only have one root node.

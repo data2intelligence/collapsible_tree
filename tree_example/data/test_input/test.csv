@@ -1,0 +1,7 @@
+parent,id,label,CD8A,celltype_size
+,Root,Root,,
+Root,another mid node,another mid node,100,12
+Root,mid node,mid node,,
+mid node,B cell,B cell,7,19
+B cell,B cell naive,naive,10,2
+B cell,B cell exhausted,exhausted,100,1
