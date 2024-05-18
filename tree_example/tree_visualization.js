@@ -1,22 +1,18 @@
 
-function collapsible_tree(input_data, search_gene, location1, path_to_icon_folder) {
+function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_folder) {
     // Set the dimensions and margins of the tree diagram
     var margin = { top: 100, right: 100, bottom: 150, left: 150 };
     (width = 1500 - margin.left - margin.right),
         (height = 800 - margin.top - margin.bottom);
 
-    var svg_container = document.getElementById("svg_container");
-    svg_container.style.width =
-
-
-
-        + margin.right + margin.left + 100;
+    var svg_container = document.getElementById(svg_location);
+    svg_container.style.width = width + margin.right + margin.left + 100;
     svg_container.style.height = height + margin.top + margin.bottom + 100;
     // append the svg object to the page
     // appends a 'group' element to 'svg'
 
     var svg = d3
-        .select(location1)
+        .select(`#${svg_location}`)
         .append("svg")
         .attr("width", width + margin.right + margin.left)
         .attr("height", height + margin.top + margin.bottom)
@@ -266,6 +262,18 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
         nodeExit.select("text").style("fill-opacity", 1e-6);
 
         // ****************** links section ***************************
+
+        var tooltip = d3.select(svg_container).append("div")
+            .attr("class", "tooltip")
+            .style("position", "absolute")
+            .style("background-color", "white")
+            .style("border", "1px solid black")
+            .style("padding", "5px")
+            .style("display", "block")  // Always visible for testing
+            .style("left", "10px")      // Fixed position for testing
+            .style("top", "10px")
+            .html("Test tooltip");      // Static content for testing
+
         const tip = d3
             .tip()
             .attr("class", "d3-tip")
@@ -292,6 +300,7 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
                 return color_scale(scale0_1(d.data.data[search_gene]));
         };
 
+        // Example SVG path selection with D3
         var linkEnter = link
             .enter()
             .insert("path", "g")
@@ -304,7 +313,25 @@ function collapsible_tree(input_data, search_gene, location1, path_to_icon_folde
             .style("stroke-width", function (d) {
                 return d.data.data["celltype_size"] * 0.0004 + 3.5;
             })
-            .style("stroke-opacity", 0.7);
+            .style("stroke-opacity", 0.7)
+            .on("mouseover", function (event, d) {
+                var tooltip = document.getElementById('customTooltip');
+                tooltip.style.opacity = 1;
+                tooltip.style.left = event.pageX + 'px';
+                tooltip.style.top = event.pageY + 'px';
+
+                // Set the content of the tooltip
+                // Ensure the value is a number and format it to 3 decimal places
+                var valueToShow = parseFloat(d.data.data[search_gene]).toFixed(3);
+
+                // Set the content of the tooltip
+                tooltip.querySelector('.tooltip-inner').textContent = `Value: ${valueToShow}`;
+
+            })
+            .on("mouseout", function () {
+                var tooltip = document.getElementById('customTooltip');
+                tooltip.style.opacity = 0;
+            });
 
 
         // UPDATE
