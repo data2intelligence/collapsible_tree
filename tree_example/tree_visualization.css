@@ -1,4 +1,4 @@
-#svg_container {
+svg_container {
   background-color: white;
 }
 
@@ -9,11 +9,53 @@
 }
 
 .node text {
-  font: 18px sans-serif;
+  font: 8px sans-serif;
 }
 
 .link {
   fill: none;
   stroke: #ccc;
   stroke-width: 2px;
+}
+
+#svg_container .tooltip {
+  position: absolute !important;
+  display: block !important;
+  z-index: 10000 !important;
+  /* Ensure it is above all other content */
+  background-color: white;
+  border: 1px solid black;
+  padding: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  /* Adjust size as needed */
+  height: 20px;
+  /* Adjust size as needed */
+  display: inline-block;
+  margin-right: 5px;
+  /* Space between box and label */
+}
+
+.legend-label {
+  margin-right: 10px;
+  /* Space between items */
+}
+
+#legendContainer {
+  width: 636px;
+  /* Adjust based on your requirements */
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+
+#colorGradient {
+  height: 20px;
+}
+
+#valueLabels {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 5px;
 }

@@ -15,7 +15,18 @@
 
   <body>
     <div class="row">
-      <div class="col" id="svg_container"></div>
+      <div class="col" id="svg_container">
+        <div id="legendContainer">
+          <div id="colorGradient" ></div>
+          <div id="valueLabels" >
+              <!-- Labels will be added dynamically -->
+          </div>
+        </div>
+        <div style="padding-top: 10px;">
+          <button data-scheme="scheme1">BrewerBlues</button>
+          <button data-scheme="scheme2">Red</button>
+          <button data-scheme="scheme3">Viridis</button>
+      </div>
     </div>
     <div id="customTooltip" class="tooltip bs-tooltip-top" role="tooltip" style="position: absolute; opacity: 0; pointer-events: none;">
       <div class="tooltip-arrow"></div>

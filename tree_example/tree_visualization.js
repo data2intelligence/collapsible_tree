@@ -29,7 +29,6 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
 
     function build_tree(data) {
 
-
         // Get the max expression value of certain gene across all cell types
         // Then this will be used in the color scale section below.
         const expr_value_array = [];
@@ -41,6 +40,8 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
             }
         };
         expr_max = Math.max.apply(null, expr_value_array);
+
+
         // d3.stratify(): convert the 2 columns in the .csv file to a nested structure.
         var stratify = d3
             .stratify()
@@ -64,52 +65,98 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
             })(root);
 
         // Recursively get the weighted avg of expression level for each node.
+        console.log(root);
         weighted_avg_expr(root);
+
+        //----------Color scale
+        // Define the color schemes and values
+        const schemes = {
+            scheme1: {
+                colors: ['#eef3ff', '#c6dbef', '#9ec9e1', '#6baed5', '#4192c6', '#2271b5', '#0a4593'],
+                values: [0, 2, 4, 6, 8, 10, 12]
+            },
+            scheme2: {
+                colors: ['#e2e6bd', '#f0df80', '#f6c971', '#edab65', '#d98558', '#b9524c', '#8e133b'],
+                values: [0, 2, 4, 6, 8, 10, 12]
+            },
+            scheme3: {
+                colors: ['#fde725', '#8fd744', '#35b779', '#22908b', '#31688e', '#443a83', '#440d54'],
+                values: [0, 2, 4, 6, 8, 10, 12]
+            }
+        };
+
+        let color_scale; // Global variable for the color scale
+        let fill; // Global function for setting color
+        let defaultColor = "#cccccc"; // Manage default color dynamically
+        let selectedSchemeKey = 'scheme1';
+        // Update color settings function
+        function updateColorSettings(schemeKey, expr_max) {
+            const scheme = schemes[schemeKey];
+            color_scale = chroma.scale(scheme.colors).mode('lch').domain([0, 1]);
+            const scale0_1 = d3.scaleLinear().domain([0, expr_max]).range([0, 1]);
+
+            // Update fill function
+            fill = (d) => {
+                if (d.data.data[search_gene]) {
+                    return color_scale(scale0_1(d.data.data[search_gene])).hex();
+                }
+                return defaultColor;
+            };
+
+            // Update legend as well
+            const colorGradient = document.getElementById('colorGradient');
+            const valueLabels = document.getElementById('valueLabels');
+
+            colorGradient.style.background = `linear-gradient(to right, ${scheme.colors.join(', ')})`;
+            valueLabels.innerHTML = '';
+
+            scheme.values.forEach(value => {
+                const label = document.createElement('span');
+                label.textContent = `${value.toLocaleString()}`;
+                valueLabels.appendChild(label);
+            });
+
+            if (valueLabels.children.length > 0) {
+                valueLabels.children[0].style.marginRight = '0';
+                valueLabels.children[valueLabels.children.length - 1].style.marginLeft = '0';
+            }
+        }
+        // Update link color after color changed button
+        function updateTreeColors() {
+            // Re-select all link elements and update their stroke color
+            d3.selectAll(".link")
+                .transition()  // Optional: for smoother visual transition
+                .style("stroke", function (d) { return fill(d); });
+        }
+        function setColorScheme(schemeKey, expr_max) {
+            updateColorSettings(schemeKey, expr_max);
+            updateTreeColors(); // Update the colors of the tree after setting the new color scheme
+        }
+
+        // Initialize with the first scheme
+        setColorScheme(selectedSchemeKey, expr_max);
+
+        // Select all buttons with the 'data-scheme' attribute and attach the click event listeners
+        document.querySelectorAll('button[data-scheme]').forEach(button => {
+            button.addEventListener('click', function () {
+                // Extarct the selected scheme key 
+                selectedSchemeKey = this.getAttribute('data-scheme');
+                // Call setColorScheme with the extracted scheme key and the global expr_max
+                setColorScheme(selectedSchemeKey, expr_max);
+            });
+        });
+
 
         // Collapse after the second level for the initial layout. (Optional)
         // root.children.forEach(collapse);
 
-        update(root);
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // Add legend for color scale
-            var legend = document.createElement("canvas");
-            // var legend_container = document.getElementById('legend_container');
-            document.body.appendChild(legend);
-            legend.setAttribute("id", "legend");
-            legend.style.width = "120px";
-            legend.style.height = "70px";
-
-            const ctx = legend.getContext('2d');
-
-            legend.style.position = "absolute";
-            legend.style.top = "700px";
-            legend.style.left = "200px";
-
-            // Define the gradient fill
-            const gradient = ctx.createLinearGradient(0, 0, 200, 0);
-            gradient.addColorStop(0, "#F0D8D8");
-            gradient.addColorStop(0.5, '#FF7F7F');
-            gradient.addColorStop(1, '#F01818');
-
-            // Draw the rectangle with the gradient fill
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 200, 50);
-
-            var textElement = document.createElement("div");
-            textElement.innerHTML = '0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + expr_max;
-            textElement.style.position = "absolute";
-            textElement.style.top = "732px";
-            textElement.style.left = "200px";
-            document.body.appendChild(textElement);
-        });
+        update_tree(root, fill);
 
     };
 
     // recursive function
     function weighted_avg_expr(d) {
-        console.log(d);
+
         function isValidNumber(value) {
             // Check if the value is a number and is finite ( exclude the NaN undefined, infinite number)
             return typeof value === 'number' && Number.isFinite(value);
@@ -120,7 +167,6 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
         if (!d.children) {
             // check if all leaf nodes have size and values
             try {
-
                 // Ensure both values are valid numbers
                 if (isValidNumber(dataSection?.[search_gene]) && isValidNumber(dataSection?.["celltype_size"])) {
                     return;
@@ -159,6 +205,7 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
         };
     };
 
+
     // collapse the node and all it's children
     function collapse(d) {
         if (d.children) {
@@ -168,13 +215,13 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
         }
     }
     // update the tree after collapse
-    function update(data) {
+    function update_tree(data, fill) {
         // Compute the new tree layout.
         var nodes = root.descendants(),
             // the slice(1) here, skip the 1st element, which means removing the root node.
             links = root.descendants().slice(1);
 
-        // ****************** Nodes section ***************************
+        // ****************** Nodes section ********
 
         // Update the nodes...
         var node = svg.selectAll("g.node").data(nodes, function (d) {
@@ -263,42 +310,12 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
 
         // ****************** links section ***************************
 
-        var tooltip = d3.select(svg_container).append("div")
-            .attr("class", "tooltip")
-            .style("position", "absolute")
-            .style("background-color", "white")
-            .style("border", "1px solid black")
-            .style("padding", "5px")
-            .style("display", "block")  // Always visible for testing
-            .style("left", "10px")      // Fixed position for testing
-            .style("top", "10px")
-            .html("Test tooltip");      // Static content for testing
-
-        const tip = d3
-            .tip()
-            .attr("class", "d3-tip")
-            .html((d) => data.data.data[search_gene]);
-        svg.call(tip);
-
         // Update the links...
         var link = svg.selectAll("path.link").data(links, function (d) {
             return d.id;
         });
         // Enter any new links at the parent's previous position.
 
-        // ****** Color scale ********
-        // Scale the [0, expr_max] to [0,1]
-        const scale0_1 = d3.scaleLinear().domain([0, expr_max]).range([-1, 1]);
-
-        // Set the color style of links
-        var color_scale = chroma.scale(["#F0D8D8", "#F01818"]);
-        // var color_scale = chroma.scale(["white", "red"]);
-
-        // Set the "fill" funtion, which will be applied to "link.style()".
-        const fill = (d) => {
-            if (d.data.data[search_gene])
-                return color_scale(scale0_1(d.data.data[search_gene]));
-        };
 
         // Example SVG path selection with D3
         var linkEnter = link
@@ -309,7 +326,7 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
                 var o = { x: data.x0, y: data.y0 };
                 return diagonal(o, o);
             })
-            .style("stroke", fill)
+            .style("stroke", function (d) { return fill(d); })
             .style("stroke-width", function (d) {
                 return d.data.data["celltype_size"] * 0.0004 + 3.5;
             })
@@ -332,7 +349,6 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
                 var tooltip = document.getElementById('customTooltip');
                 tooltip.style.opacity = 0;
             });
-
 
         // UPDATE
         var linkUpdate = linkEnter.merge(link);
@@ -383,8 +399,10 @@ function collapsible_tree(input_data, search_gene, svg_location, path_to_icon_fo
                 d.children = d._children;
                 d._children = null;
             }
-
-            update(d);
+            // update the tree.
+            // collapse children when clicking the node; using the selected color for the links
+            update_tree(d, fill);
         }
     }
+
 }
