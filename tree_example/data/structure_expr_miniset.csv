@@ -3,9 +3,9 @@
 1,B cell,B cell naive,naive,0.37,3.7,2.98,4.2,3.94,3.58,233.0
 2,B cell,B cell non-switched memory,non-switched memory,0.85,3.08,2.92,4.89,3.79,3.83,624.0
 3,B cell,B cell switched memory,switched memory,0.91,3.5,2.12,5.11,3.96,4.12,787.0
-4,cDC,cDC1 CLEC9A,cDC1 CLEC9A,0.6,3.78,2.07,5.75,4.32,4.47,49.0
-5,cDC,cDC2 CD1C,cDC2 CD1C,0.0,5.11,0.0,4.82,5.35,2.54,5.0
-6,cDC,cDC3 LAMP3,cDC3 LAMP3,0.61,3.22,1.21,6.02,3.53,3.94,35.0
+4,cDC,cDC1 CLEC9A,CLEC9A,0.6,3.78,2.07,5.75,4.32,4.47,49.0
+5,cDC,cDC2 CD1C,CD1C,0.0,5.11,0.0,4.82,5.35,2.54,5.0
+6,cDC,cDC3 LAMP3,LAMP3,0.61,3.22,1.21,6.02,3.53,3.94,35.0
 7,Macrophage,Macrophage M1,M1,0.45,3.5,1.48,8.99,4.55,3.94,1100.0
 8,Macrophage,Macrophage M2,M2,1.01,3.49,1.67,6.82,4.27,4.02,1806.0
 9,T CD4,T CD4 naive,naive,0.0,2.37,2.28,4.67,3.75,2.5,39.0
