@@ -12,7 +12,7 @@ There are two different layouts available, switchable by buttons. Both are colla
 1. Horizontal tree. 
 2. Radial tree.
 
-On the website, we provide three color themes. The color scale is applied to the edges based on the expression level. The width of the edges is proportional to the expression level, and when you mouse over an edge, the expression value will be displayed.
+On the website, we provide three color themes. The color scale is applied to the edges based on the expression level, and the specific expression value will be displayed when you mouse over the edge. The width of the edges is proportional to the number of cells in certain cell typs. 
 
 Preview:
 * Horizontal tree
