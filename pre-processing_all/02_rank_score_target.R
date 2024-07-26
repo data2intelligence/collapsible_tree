@@ -19,7 +19,7 @@ for (i in 1:len) {
   
   # create folder for each datasets
   folder_name = gsub('_TPM.rda','',TPM_file)
-  folder_path = paste0(getwd(),"/output_all_datasets/",folder_name )
+  folder_path = paste0(getwd(),"/medium_output_all_10_datasets/",folder_name )
 
   if(!dir.exists(folder_path)){
     dir.create(folder_path)
