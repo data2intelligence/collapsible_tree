@@ -1,4 +1,4 @@
-## Collapsible Tree Visualization
+## Lineage Visualization
 
 #### We provide a web interface(http://lineagetree.cbcb.umd.edu) that enables researchers to query gene expression values in our pre-processed data at tumor-resilient T cell (Tres) model (https://resilience.ccr.cancer.gov).  
 
@@ -26,7 +26,7 @@ Preview:
 
 **How to use**
 ---
-Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/collapsible_tree/tree/main/tree_example) folder.
+Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/lineage_visualization/tree/main/tree_example) folder.
 
 In brief, you can load the JavaScript file as a library along with all other libraries (e.g., D3 library, jquery etc). We have encapsulated the visualization functionality to a **master functions** for both horizontal and radial trees. It has five arguments: 
 
@@ -57,15 +57,15 @@ We will use scRNA sequencing data as an example to show that how to format the i
 
 2. Integrate your gene expression data with meta data.
 
-    |parent|id|label|CD8A|celltype_size|
+    |parent|id|label|celltype_size|CD8A|
     |------|--|-----|----|-------------|
     ||T cell(Root)|T cell|||
     |T cell|T CD4|T CD4|||
     |T cell|T CD8|T CD8|||
-    |T CD4|T CD4 naive|naive|0.0|39.0|
-    |T CD4|Th1|Th1|3.09|3048|
-    |T CD8|T CD8 central memory|central memory|6.19|980.0|
-    |T CD8|T CD8 effector|effector|5.98|2130.0|
+    |T CD4|T CD4 naive|naive|39.0|0.0|
+    |T CD4|Th1|Th1|3048|3.09|
+    |T CD8|T CD8 central memory|central memory|980.0|6.19|
+    |T CD8|T CD8 effector|effector|2130.0|5.98|
 
 Prepare your data as a **.csv** file.
 ```
