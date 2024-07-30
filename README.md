@@ -1,4 +1,4 @@
-## Lineage Visualization
+## Collapsible Visualization
 
 #### We provide a web interface(http://lineagetree.cbcb.umd.edu) that enables researchers to query gene expression values in our pre-processed data at tumor-resilient T cell (Tres) model (https://resilience.ccr.cancer.gov).  
 
@@ -26,7 +26,7 @@ Preview:
 
 **How to use**
 ---
-Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/lineage_visualization/tree/main/tree_example) folder.
+Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/collapsible_tree/tree/main/tree_example) folder.
 
 In brief, you can load the JavaScript file as a library along with all other libraries (e.g., D3 library, jquery etc). We have encapsulated the visualization functionality to a **master functions** for both horizontal and radial trees. It has five arguments: 
 
