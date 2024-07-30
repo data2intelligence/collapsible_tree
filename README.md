@@ -1,4 +1,4 @@
-## Collapsible Visualization
+## Collapsible Tree Visualization
 
 #### We provide a web interface(http://lineagetree.cbcb.umd.edu) that enables researchers to query gene expression values in our pre-processed data at tumor-resilient T cell (Tres) model (https://resilience.ccr.cancer.gov).  
 
