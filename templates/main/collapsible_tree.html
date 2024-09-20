@@ -112,8 +112,8 @@
       // Format: select("tag"), select(".classname"), select("#ID")
       // Here we use the ID, the id needs to match the id you use the html file. (line 46)
       const svg_location_id = "your_svg_container";  
-      const is_local_csv = true; //Set to true by default. If the CSV file is local, leave it as true to parse it with D3. If the file can be parsed directly without D3, set it to false.
-      collapsible_tree(input_data, is_local_csv, search_column, svg_location_id, path_to_icon_folder);
+      
+      collapsible_tree(input_data, search_column, svg_location_id, path_to_icon_folder);
 
     </script>
 

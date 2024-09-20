@@ -6,37 +6,54 @@ Users can easily visualize expression data hierarchically. Gene expression level
 
 #### For developers, this is a highly customizable JavaScript library that can be easily tailored to different structures or purposes.
 
-**Tree layout, color and interactive functions**
+**Tree layout, color theme and interactive functions**
 ---
-There are two different layouts available, switchable by buttons. Both are collapsible when you click the nodes:
+#### **Two Layouts**
+The layouts are switchable by buttons. In both layouts, the nodes are collapsible when you click them:
 1. Horizontal tree. 
 2. Radial tree.
 
-On the website, we provide three color themes. The color scale is applied to the edges based on the expression level, and the specific expression value will be displayed when you mouse over the edge. The width of the edges is proportional to the number of cells in certain cell typs. 
+#### **three Color Themes**
+The color scale is applied to the edges based on the expression level, and the specific expression value will be displayed when you mouse over the edge. The width of the edges is proportional to the number of cells in certain cell typs. 
 
 Preview:
 * Horizontal tree
-
     <img src= "preview_image/horizontal_tree.png" width = "650" height= "400">
 
 * Radial tree
-
     <img src= "preview_image/radial_tree.png" width = "650" height= "400">
 
 
 **How to use**
 ---
-Check the example html file we provide under the [tree_example](https://github.com/data2intelligence/collapsible_tree/tree/main/tree_example) folder.
+1- Run the sample webapp*
 
-In brief, you can load the JavaScript file as a library along with all other libraries (e.g., D3 library, jquery etc). We have encapsulated the visualization functionality to a **master functions** for both horizontal and radial trees. It has five arguments: 
+We demonstrate a basic example of 'collapsible tree'. In this example, we run the app on a local server using Django.
 
-* input_data: path to input data (gene expression data and child-parent relationship).
-* search_column: name of the gene(feature) you would like to visualize.
-* svg_location_id: the container id, indicating where you would like to append the diagram to.
-* path_to_icon_folder: path to the icon image folder.
-* is_local_csv: Set to true by default. If the CSV file is local, leave it as true to parse it with D3. If the file can be parsed directly without D3, set it to false.
+To run this example, use the following command:
+```bash
+bash run_server.sh
+```
+This script will help you to:
+- 1. Create a conda environment based on the provided `environment.yaml` file.
+- 2. Start the Django server.
 
-Other customization options:
+The server will be running at http://127.0.0.1:8000.
+
+2- Customizing the Collapsible Tree
+For customization, including integrating the collapsible tree into an existing web application or modifying it for your needs:
+
+- The JavaScript file, CSS file and sample input data, icon folder are availabel in the `static` folder. 
+- The HTML file can be found under `templates/main`.
+
+To use the collapsible tree function, load the JavaScript file along with the required libraries (e.g., D3 library, jquery etc). he visualization functionality is encapsulated in a **master functions** for both horizontal and radial trees. It accepts the following four arguments:
+
+* **input_data**: Path to the input data (data and child-parent relationships).
+* **search_column**: The name of the gene (or feature) you want to visualize.
+* **svg_location_id**: The container ID, specifying where the diagram should be appended.
+* **path_to_icon_folder**: Path to the folder containing the icon images.
+
+3- Other customization options:
 * Customize your own color theme: Modify the variable _schemes_ in the tree_visualization.js file to create your own color style.
 
 Please see detailed information for data preparation below.

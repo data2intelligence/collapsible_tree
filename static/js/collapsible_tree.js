@@ -1,6 +1,4 @@
-function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, path_to_icon_folder) {
-
-    // Use viewport units for responsive dimensions
+function collapsible_tree(input_data, search_column, svg_location, path_to_icon_folder) {
     let svg_container = document.getElementById(svg_location);
     svg_container.style.width = "90vw";
     svg_container.style.height = "100vh";
@@ -17,6 +15,7 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
         .style("height", "100%");
 
     var tree_svg = document.getElementById("tree_svg");
+
     let basic_group;
     let root;
     let size_col_name = 'celltype_size'; // customized it if needed
@@ -49,18 +48,18 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
     // Slider for radial tree
     var sliderContainer = document.getElementById("sliderContainer");
 
-    // Set default visibility of slider container. 
+    // // Set default visibility of slider container. 
     sliderContainer.style.display = "none";
 
     // Load the data and build the initial view
-    initializeTreeView(input_data, is_local_csv);
+    initializeTreeView(input_data, build_tree);
 
     document.getElementById("tree-layout-button").addEventListener("click", function () {
         // Clear existing SVG content
         svg.selectAll("*").remove();
         tree_svg.style.transform = ""; // Reset the rotation
         sliderContainer.style.display = "none"; // Hide the slider
-        initializeTreeView(input_data, is_local_csv);
+        initializeTreeView(input_data, build_tree);
     });
 
     document.getElementById("radial-layout-button").addEventListener("click", function () {
@@ -69,7 +68,7 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
         sliderContainer.style.display = "block"; // Show the slider
         // Set the transform origin to a specific point
         tree_svg.style.transformOrigin = `${radialTransformX}px ${radialTransformY}px`;
-        initializeRadialView(input_data, is_local_csv);
+        initializeTreeView(input_data, build_radial_tree);
     });
 
     // The slider component
@@ -104,20 +103,21 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
 
 
     // parse certain column
-    function csvParser(data, size_col_name, search_gene) {
+    function csvParser(data, size_col_name, search_column) {
         return {
             parent: data.parent,
             id: data.id,
             label: data.label,
             [size_col_name]: data[size_col_name],
-            [search_gene]: data[search_gene]
+            [search_column]: data[search_column]
         };
     }
 
     // Function to load and parse CSV data
     function loadAndParseCSV(input_data, callback) {
+
         d3.csv(input_data, function (data) {
-            return csvParser(data, size_col_name, search_gene);
+            return csvParser(data, size_col_name, search_column);
         }).then(parsedData => {
             callback(parsedData);
         }).catch(error => {
@@ -126,22 +126,22 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
     }
 
     // Function to initialize the tree view
-    function initializeTreeView(input_data, is_local_csv) {
-        if (is_local_csv) {
-            loadAndParseCSV(input_data, build_tree);
-        } else {
-            build_tree(input_data);
+    function initializeTreeView(input_data, build_which_tree) {
+        // local- string, uploaded csv- object
+        try {
+            if (typeof input_data === "string") {
+                loadAndParseCSV(input_data, build_which_tree);
+            } else if (typeof input_data === "object") {
+                build_which_tree(input_data);
+            } else {
+                // Handle cases where input_data is neither a string nor an object
+                throw new Error("Unexpected input data type: " + typeof input_data);
+            }
+        } catch (error) {
+            console.error("Caught an error in processing input csv:", error);
         }
     }
 
-    // Function to initialize the radial view
-    function initializeRadialView(input_data, is_local_csv) {
-        if (is_local_csv) {
-            loadAndParseCSV(input_data, build_radial_tree);
-        } else {
-            build_radial_tree(input_data);
-        }
-    }
     // recursive function
     function weighted_avg_expr(d) {
 
@@ -149,24 +149,24 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
             // Check if the value is a number and is finite ( exclude the NaN undefined, infinite number)
             return typeof value === 'number' && Number.isFinite(value);
         }
-        d.data.data[search_gene] = parseFloat(d.data.data[search_gene]);
+        d.data.data[search_column] = parseFloat(d.data.data[search_column]);
         d.data.data[size_col_name] = parseInt(d.data.data[size_col_name]);
         let dataSection = d?.data?.data;
         if (!d.children) {
             // check if all *leaf* nodes have size and values
             try {
                 // Ensure both values are valid numbers
-                if (isValidNumber(dataSection?.[search_gene]) && isValidNumber(dataSection?.[size_col_name])) {
+                if (isValidNumber(dataSection?.[search_column]) && isValidNumber(dataSection?.[size_col_name])) {
                     return;
                 } else {
-                    throw new Error(`The leaf node associated with '${search_gene}' has null values, which is not allowed`);
+                    throw new Error(`The leaf node associated with '${search_column}' has null values, which is not allowed`);
                 }
             } catch (error) {
                 console.error("Caught an error:", error);
             }
         } else {
 
-            if (isValidNumber(dataSection?.[search_gene]) && isValidNumber(dataSection?.[size_col_name])) {
+            if (isValidNumber(dataSection?.[search_column]) && isValidNumber(dataSection?.[size_col_name])) {
                 for (i = 0; i < d.children.length; i++) {
                     child = d.children[i];
                     weighted_avg_expr(child);
@@ -183,10 +183,10 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
 
                     child_size = child.data.data[size_col_name];
 
-                    sum_w_expr += child.data.data[search_gene] * child_size;
+                    sum_w_expr += child.data.data[search_column] * child_size;
                     sum_size += child_size;
                 };
-                d.data.data[search_gene] = sum_w_expr / sum_size;
+                d.data.data[search_column] = sum_w_expr / sum_size;
                 d.data.data[size_col_name] = sum_size;
 
             }
@@ -199,8 +199,8 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
         let expr_value_array = [];
 
         for (i = 0; i < data.length; i++) {
-            if (data[i][search_gene]) {
-                var expr_value = parseFloat(data[i][search_gene]);
+            if (data[i][search_column]) {
+                var expr_value = parseFloat(data[i][search_column]);
                 expr_value_array.push(expr_value);
             }
         };
@@ -268,8 +268,8 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
         // Update fill function
 
         fill = (d) => {
-            if (d.data.data[search_gene]) {
-                return color_scale(scale0_1(d.data.data[search_gene])).hex();
+            if (d.data.data[search_column]) {
+                return color_scale(scale0_1(d.data.data[search_column])).hex();
             }
             return defaultColor;
         };
@@ -285,8 +285,8 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
 
         // Update fill function
         fill = (d) => {
-            if (d.target.data.data[search_gene]) {
-                return color_scale(scale0_1(d.target.data.data[search_gene])).hex();
+            if (d.target.data.data[search_column]) {
+                return color_scale(scale0_1(d.target.data.data[search_column])).hex();
             }
             return defaultColor;
         };
@@ -455,7 +455,7 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
                 tooltip.style.top = event.pageY + 'px';
                 // Set the content of the tooltip
                 // Ensure the value is a number and format it to 3 decimal places
-                let valueToShow = parseFloat(d.data.data[search_gene]).toFixed(3);
+                let valueToShow = parseFloat(d.data.data[search_column]).toFixed(3);
 
                 // Set the content of the tooltip
                 tooltip.querySelector('.tooltip-inner').textContent = `Value: ${valueToShow}`;
@@ -556,8 +556,8 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
         const expr_value_array = [];
 
         for (i = 0; i < data.length; i++) {
-            if (data[i][search_gene]) {
-                var expr_value = parseFloat(data[i][search_gene]);
+            if (data[i][search_column]) {
+                var expr_value = parseFloat(data[i][search_column]);
                 expr_value_array.push(expr_value);
             }
         };
@@ -613,7 +613,7 @@ function collapsible_tree(input_data, is_local_csv, search_gene, svg_location, p
 
                     // Set the content of the tooltip
                     // Ensure the value is a number and format it to 3 decimal places
-                    let valueToShow = parseFloat(d.target.data.data[search_gene]).toFixed(3);
+                    let valueToShow = parseFloat(d.target.data.data[search_column]).toFixed(3);
 
                     // Set the content of the tooltip
                     tooltip.querySelector('.tooltip-inner').textContent = `Value: ${valueToShow}`;
