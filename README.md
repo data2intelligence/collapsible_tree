@@ -17,11 +17,11 @@ On the website, we provide three color themes. The color scale is applied to the
 Preview:
 * Horizontal tree
 
-    <img src= "tree_example/preview_image/horizontal_tree.png" width = "650" height= "400">
+    <img src= "preview_image/horizontal_tree.png" width = "650" height= "400">
 
 * Radial tree
 
-    <img src= "tree_example/preview_image/radial_tree.png" width = "650" height= "400">
+    <img src= "preview_image/radial_tree.png" width = "650" height= "400">
 
 
 **How to use**
