@@ -13,7 +13,7 @@ The layouts are switchable by buttons. In both layouts, the nodes are collapsibl
 1. Horizontal tree. 
 2. Radial tree.
 
-#### **three Color Themes**
+#### **Three Color Themes**
 The color scale is applied to the edges based on the expression level, and the specific expression value will be displayed when you mouse over the edge. The width of the edges is proportional to the number of cells in certain cell typs. 
 
 Preview:
@@ -26,7 +26,7 @@ Preview:
 
 **How to use**
 ---
-1- Run the sample webapp*
+1- Run the sample webapp
 
 We demonstrate a basic example of 'collapsible tree'. In this example, we run the app on a local server using Django.
 
@@ -48,7 +48,7 @@ For customization, including integrating the collapsible tree into an existing w
 
 To use the collapsible tree function, load the JavaScript file along with the required libraries (e.g., D3 library, jquery etc). he visualization functionality is encapsulated in a **master functions** for both horizontal and radial trees. It accepts the following four arguments:
 
-* **input_data**: Path to the input data (data and child-parent relationships).
+* **input_data**: Path to the input data, which includes both the data itself and the child-parent relationships (see details below).
 * **search_column**: The name of the gene (or feature) you want to visualize.
 * **svg_location_id**: The container ID, specifying where the diagram should be appended.
 * **path_to_icon_folder**: Path to the folder containing the icon images.
