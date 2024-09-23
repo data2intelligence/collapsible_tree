@@ -3,7 +3,7 @@ channels:
   - defaults
 dependencies:
   - python=3.11
-  - django
-  - pip
-    - django-crispy-forms
+  - django=5.1
+  - pip:
+    - django-crispy-forms==2.3
 
