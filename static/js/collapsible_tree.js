@@ -1,132 +1,76 @@
-function collapsible_tree(input_data, search_column, svg_location, path_to_icon_folder) {
-    let svg_container = document.getElementById(svg_location);
-    svg_container.style.width = "90vw";
-    svg_container.style.height = "100vh";
+class TreeLayout {
+    constructor(input_data, search_column, svg_location, path_to_icon_folder) {
+        this.input_data = input_data;
+        this.search_column = search_column;
+        this.svg_container = document.getElementById(svg_location);
+        this.path_to_icon_folder = path_to_icon_folder;
+        this.size_col_name = 'celltype_size'; // Change if needed
 
-    // set up the width and height for tree structure
-    const width = parseFloat(window.getComputedStyle(svg_container).width) * 0.8;
-    const height = parseFloat(window.getComputedStyle(svg_container).height) * 0.8;
+        // set up color scheme
+        this.schemes = {
+            scheme1: {
+                colors: ['#eef3ff', '#c6dbef', '#9ec9e1', '#6baed5', '#4192c6', '#2271b5', '#0a4593'],
+            },
+            scheme2: {
+                colors: ['#e2e6bd', '#f0df80', '#f6c971', '#edab65', '#d98558', '#b9524c', '#8e133b'],
+            },
+            scheme3: {
+                colors: ['#fde725', '#8fd744', '#35b779', '#22908b', '#31688e', '#443a83', '#440d54'],
 
-    // Create the SVG inside the container
-    let svg = d3.select(svg_container)
-        .append("svg")
-        .attr("id", "treeSVG")
-        .style("width", "100%")  // Make the SVG responsive within its container
-        .style("height", "100%");
-
-    var treeSVG = document.getElementById("treeSVG");
-
-    let basic_group;
-    let root;
-    let size_col_name = 'celltype_size'; // customized it if needed
-    let expr_max;
-    // Set the size of the radial tree
-    let radius = height * 0.6;
-
-    // Define the color schemes and values
-    const schemes = {
-        scheme1: {
-            colors: ['#eef3ff', '#c6dbef', '#9ec9e1', '#6baed5', '#4192c6', '#2271b5', '#0a4593'],
-        },
-        scheme2: {
-            colors: ['#e2e6bd', '#f0df80', '#f6c971', '#edab65', '#d98558', '#b9524c', '#8e133b'],
-        },
-        scheme3: {
-            colors: ['#fde725', '#8fd744', '#35b779', '#22908b', '#31688e', '#443a83', '#440d54'],
-
-        }
-    };
-    let color_scale; // Global variable for the color scale
-    let fill; // Global function for setting color
-    let defaultColor = "#cccccc"; // Manage default color
-    let selectedSchemeKey = 'scheme1';
-
-    // Transform origin for radial tree
-    let radialTransformX = width / 2,
-        radialTransformY = 350;
-
-    // Slider for radial tree
-    var sliderContainer = document.getElementById("sliderContainer");
-
-    // // Set default visibility of slider container. 
-    sliderContainer.style.display = "none";
-
-    // Load the data and build the initial view
-    initializeTreeView(input_data, build_tree);
-
-    document.getElementById("tree-layout-button").addEventListener("click", function () {
-        // Clear existing SVG content
-        svg.selectAll("*").remove();
-        treeSVG.style.transform = ""; // Reset the rotation
-        sliderContainer.style.display = "none"; // Hide the slider
-        initializeTreeView(input_data, build_tree);
-    });
-
-    document.getElementById("radial-layout-button").addEventListener("click", function () {
-        // Clear existing SVG content
-        svg.selectAll("*").remove();
-        sliderContainer.style.display = "block"; // Show the slider
-        // Set the transform origin to a specific point
-        treeSVG.style.transformOrigin = `${radialTransformX}px ${radialTransformY}px`;
-        initializeTreeView(input_data, build_radial_tree);
-    });
-
-    // The slider component
-    $(document).ready(function () {
-        // Initialize the slider component
-        var slider = new Slider('#mySlider', {
-            formatter: function (value) {
-                return 'Current value: ' + value;
             }
-        });
+        };
+        this.selectedSchemeKey = 'scheme1'; // Default scheme
+        this.defaultColor = "#cccccc"; // Default color
+        // const color_scale = null;
+        this.initSVG();   // Initialize SVG element
+        // this.initColorScheme(); // Initialize color scheme
 
-        var rotateValue = document.getElementById("rotateValue");
-        var treeSVG = document.getElementById("treeSVG");
+    }
 
-        // Function to update the rotation of the SVG
-        function updateRotation(value) {
-            rotateValue.innerHTML = value;
-            // // Log the current rotation value for debugging purposes
-            // console.log('rotate value:', rotateValue.innerHTML);
-            treeSVG.style.transform = "rotate(" + value + "deg)";
-        }
+    initSVG() {
+        // Set up the container
+        this.svg_container.style.width = "90vw";
+        this.svg_container.style.height = "100vh";
 
-        // Attach event listeners to the slider for the 'slide' event
-        // Update the rotation based on the slider's current value
-        slider.on('slide', function (sliderValue) {
-            updateRotation(sliderValue);
-        });
-        slider.on('change', function (sliderValue) {
-            updateRotation(sliderValue.newValue);
-        });
-    });
+        // set up the width and height for tree structure
+        this.width = parseFloat(window.getComputedStyle(this.svg_container).width) * 0.8;
+        this.height = parseFloat(window.getComputedStyle(this.svg_container).height) * 0.8;
 
+        // Create the SVG element inside the container
+        this.svg = d3.select(this.svg_container)
+            .append("svg")
+            .attr("id", "treeSVG")
+            .style("width", "100%") // Make the SVG responsive within its container
+            .style("height", "100%");
+        // initialize the slider being hidden
+        let sliderContainer = document.getElementById("sliderContainer");
+        sliderContainer.style.display = "none"; // Show the slider for radial layout
+    }
 
-    // parse certain column
-    function csvParser(data, size_col_name, search_column) {
+    csvParser(data) {
         return {
             parent: data.parent,
             id: data.id,
             label: data.label,
-            [size_col_name]: data[size_col_name],
-            [search_column]: data[search_column]
+            [this.size_col_name]: data[this.size_col_name],
+            [this.search_column]: data[this.search_column]
         };
     }
-
-    // Function to initialize the tree view
-    function initializeTreeView(input_data, build_which_tree) {
+    initializeTreeView() {
+        let input_data = this.input_data;
         // local- string, uploaded csv- object
         try {
             if (typeof input_data === "string") {
-                d3.csv(input_data, function (data) {
-                    return csvParser(data, size_col_name, search_column);
+                d3.csv(input_data, (data) => {
+                    return this.csvParser(data);
                 }).then(parsedData => {
-                    build_which_tree(parsedData);
+                    console.log('parsedData type:', typeof parsedData);
+                    this.buildTree(parsedData);
                 }).catch(error => {
                     console.error("Error loading or processing CSV:", error);
                 });
             } else if (typeof input_data === "object") {
-                build_which_tree(input_data);
+                this.buildTree(input_data);
             } else {
                 // Handle cases where input_data is neither a string nor an object
                 throw new Error("Unexpected input data type: " + typeof input_data);
@@ -136,81 +80,153 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
         }
     }
 
-    // recursive function
-    function weighted_avg_expr(d) {
+    weightedAvgExpr(d) {
+        let search_column = this.search_column;
+        let size_col_name = this.size_col_name;
 
         function isValidNumber(value) {
-            // Check if the value is a number and is finite ( exclude the NaN undefined, infinite number)
+            // Check if the value is a number and is finite (exclude NaN, undefined, infinite numbers)
             return typeof value === 'number' && Number.isFinite(value);
         }
+
+        // Parse values and ensure they are numbers
         d.data.data[search_column] = parseFloat(d.data.data[search_column]);
         d.data.data[size_col_name] = parseInt(d.data.data[size_col_name]);
+
         let dataSection = d?.data?.data;
+
         if (!d.children) {
-            // check if all *leaf* nodes have size and values
+            // If it's a leaf node, ensure both size and value are valid numbers
             try {
-                // Ensure both values are valid numbers
                 if (isValidNumber(dataSection?.[search_column]) && isValidNumber(dataSection?.[size_col_name])) {
                     return;
                 } else {
-                    throw new Error(`The leaf node associated with '${search_column}' has null values, which is not allowed`);
+                    throw new Error(`The leaf node associated with '${search_column}' has null or invalid values.`);
                 }
             } catch (error) {
                 console.error("Caught an error:", error);
             }
         } else {
-
             if (isValidNumber(dataSection?.[search_column]) && isValidNumber(dataSection?.[size_col_name])) {
-                for (i = 0; i < d.children.length; i++) {
-                    child = d.children[i];
-                    weighted_avg_expr(child);
+                // Recursively process child nodes
+                for (let i = 0; i < d.children.length; i++) {
+                    let child = d.children[i];
+                    this.weightedAvgExpr(child);
                 }
             } else {
-                // please define all of your variables here, to avoid global letiables
-                let child_size;
-                let sum_w_expr = 0, sum_size = 0;
-                let i, child;
-                for (i = 0; i < d.children.length; i++) {
-                    child = d.children[i];
+                // Initialize variables for weighted average calculation
+                let sum_w_expr = 0;
+                let sum_size = 0;
 
-                    weighted_avg_expr(child);
+                // Process child nodes
+                for (let i = 0; i < d.children.length; i++) {
+                    let child = d.children[i];
 
-                    child_size = child.data.data[size_col_name];
+                    // Recursively process the child
+                    this.weightedAvgExpr(child);
 
+                    let child_size = child.data.data[size_col_name];
                     sum_w_expr += child.data.data[search_column] * child_size;
                     sum_size += child_size;
-                };
+                }
+
+                // Update the parent node with weighted average values
                 d.data.data[search_column] = sum_w_expr / sum_size;
                 d.data.data[size_col_name] = sum_size;
-
             }
-        };
+        }
     };
 
-    function build_tree(data) {
-        // Get the max expression value of certain gene across all cell types
-        // Then this will be used in the color scale section below.
+    getExprMax(data) {
         let expr_value_array = [];
-
-        for (i = 0; i < data.length; i++) {
+        let search_column = this.search_column;
+        for (let i = 0; i < data.length; i++) {
             if (data[i][search_column]) {
-                var expr_value = parseFloat(data[i][search_column]);
+                let expr_value = parseFloat(data[i][search_column]);
                 expr_value_array.push(expr_value);
             }
         };
+        if (expr_value_array.length > 0) {
+            this.expr_max = Math.max.apply(null, expr_value_array);
+        } else {
+            this.expr_max = 0;  // Default or fallback value
+            console.log(`ERROR: expr_value_array is empty, reture expr_max = 0`);
+        }
 
-        expr_max = Math.max.apply(null, expr_value_array);
+
+    }
+    updateColorSettings() {
+        this.selectedScheme = this.schemes[this.selectedSchemeKey].colors;
+        this.color_scale = chroma.scale(this.selectedScheme).mode('lch').domain([0, 1]);
+        this.scale0_1 = d3.scaleLinear().domain([0, this.expr_max]).range([0, 1]);
+    }
+
+    setupColorLegend(selectedScheme) {
+        // Update legend as well
+        const colorGradient = document.getElementById('colorGradient');
+        const valueLabels = document.getElementById('valueLabels');
+
+        colorGradient.style.background = `linear-gradient(to right, ${selectedScheme.join(', ')})`;
+        valueLabels.innerHTML = '';
+        let values = [0, this.expr_max / 2, this.expr_max].map(value => Math.floor(value));;
+        values.forEach(value => {
+            const label = document.createElement('span');
+            label.textContent = `${value.toLocaleString()}`;
+            valueLabels.appendChild(label);
+        });
+
+        if (valueLabels.children.length > 0) {
+            valueLabels.children[0].style.marginRight = '0';
+            valueLabels.children[valueLabels.children.length - 1].style.marginLeft = '0';
+        }
+    }
+
+    // Collapse the node and all it's children
+    collapse(d) {
+        if (d.children) {
+            d._children = d.children;
+            d._children.forEach(collapse);
+            d.children = null;
+        }
+    }
+
+    buildTree(parsedData) {
+        // Get the max expression value of certain gene across all cell types
+        // Then this will be used in the color scale section below.
+        this.getExprMax(parsedData);
         // d3.stratify(): convert the 2 columns in the .csv file to a nested structure.
         let stratify = d3
             .stratify()
             .id((d) => d.id)
             .parentId((d) => d.parent);
+        this.treeData = stratify(parsedData);
+    }
+    // Toggle children on click.
+    clickHandler = (event, d) => {
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+        }
 
-        treeData = stratify(data);
+        // Update the tree after toggling
+        this.updateTree(d, this.fill);
+    }
+}
 
+class HorizontalTreeLayout extends TreeLayout {
+    constructor(input_data, search_column, svg_location, path_to_icon_folder) {
+        super(input_data, search_column, svg_location, path_to_icon_folder);
+    }
+
+    buildTree(parsedData) {
+        super.buildTree(parsedData);
+        let height = this.height;
+        let width = this.width;
         // d3.hierarchy(): assigns parent, children, height, depth.
-        root = d3.hierarchy(treeData);
-
+        let root = d3.hierarchy(this.treeData);
         root.x0 = height / 2;
         root.y0 = 0;
 
@@ -225,223 +241,93 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
 
         // Recursively calculate the weighted average of expression levels for each parent node,
         // but only if the node itself does not have a value.
-        weighted_avg_expr(root);
+        this.weightedAvgExpr(root);
 
         // Transform the svg for horizontal tree to make the root node fully visible.
-        basic_group = svg.append("g")
+        this.basic_group = this.svg.append("g")
             .attr("transform", "translate(60 , 0)");
 
-        //----------Color scale
+        //Color scale
         // Initialize with the first scheme
-        setColorScheme(selectedSchemeKey, expr_max);
-
-        // Select all buttons with the 'data-scheme' attribute and attach the click event listeners
-        document.querySelectorAll('button[data-scheme]').forEach(button => {
-            button.addEventListener('click', function () {
-                // Extarct the selected scheme key
-                selectedSchemeKey = this.getAttribute('data-scheme');
-                // Call setColorScheme with the extracted scheme key and the global expr_max
-                setColorScheme(selectedSchemeKey, expr_max);
-
-            });
-        });
-
-        // Collapse after the second level for the initial layout. (Optional)
-        // root.children.forEach(collapse);
-
-        update_tree(root, fill);
-
-    };
-
-    // Update color settings function
-    function updateColorSettings(schemeKey, expr_max) {
-        const scheme = schemes[schemeKey];
-        color_scale = chroma.scale(scheme.colors).mode('lch').domain([0, 1]);
-        const scale0_1 = d3.scaleLinear().domain([0, expr_max]).range([0, 1]);
-
-        // Update fill function
-
-        fill = (d) => {
-            if (d.data.data[search_column]) {
-                return color_scale(scale0_1(d.data.data[search_column])).hex();
-            }
-            return defaultColor;
-        };
-
-        // Update legend as well
-        setupColorLegend(scheme, expr_max);
+        this.setColorScheme();
+        this.root = root;
+        this.updateTree(root, this.fill);
     }
-
-    function updateRadialColorSettings(schemeKey, expr_max) {
-        const scheme = schemes[schemeKey];
-        color_scale = chroma.scale(scheme.colors).mode('lch').domain([0, 1]);
-        const scale0_1 = d3.scaleLinear().domain([0, expr_max]).range([0, 1]);
-
-        // Update fill function
-        fill = (d) => {
-            if (d.target.data.data[search_column]) {
-                return color_scale(scale0_1(d.target.data.data[search_column])).hex();
-            }
-            return defaultColor;
-        };
-
-        setupColorLegend(scheme, expr_max);
-
-    }
-    function setupColorLegend(scheme, expr_max) {
-        // Update legend as well
-        const colorGradient = document.getElementById('colorGradient');
-        const valueLabels = document.getElementById('valueLabels');
-
-        colorGradient.style.background = `linear-gradient(to right, ${scheme.colors.join(', ')})`;
-        valueLabels.innerHTML = '';
-        let values = [0, expr_max / 2, expr_max].map(value => Math.floor(value));;
-        values.forEach(value => {
-            const label = document.createElement('span');
-            label.textContent = `${value.toLocaleString()}`;
-            valueLabels.appendChild(label);
-        });
-
-        if (valueLabels.children.length > 0) {
-            valueLabels.children[0].style.marginRight = '0';
-            valueLabels.children[valueLabels.children.length - 1].style.marginLeft = '0';
-        }
-    }
-
-    function setColorScheme(schemeKey, expr_max) {
-        updateColorSettings(schemeKey, expr_max);
-        // Update the colors of all edges(link elements) after setting the new color scheme
-        d3.selectAll(".link")
-            .transition()
-            .style("stroke", function (d) { return fill(d); });
-    }
-    function setRadialColorScheme(schemeKey, expr_max) {
-        updateRadialColorSettings(schemeKey, expr_max);
-
-        d3.selectAll(".radial_link")
-            .transition()
-            .style("stroke", function (d) { return fill(d); });
-    }
-    // Collapse the node and all it's children
-    function collapse(d) {
-        if (d.children) {
-            d._children = d.children;
-            d._children.forEach(collapse);
-            d.children = null;
-        }
-    }
-    // Update the tree after collapse
-    function update_tree(data, fill) {
+    updateTree(source, fill) {
         // Compute the new tree layout.
-        let nodes = root.descendants(),
-            // the slice(1) here, skip the 1st element, which means removing the root node.
-            links = root.descendants().slice(1);
+        let nodes = this.root.descendants(),
+            links = this.root.descendants().slice(1);
 
         // ****************** Nodes section ********
+        let i = 0;
+        let node = this.basic_group.selectAll("g.node").data(nodes, d => d.id || (d.id = ++i));
 
-        // Update the nodes...
-        let node = basic_group.selectAll("g.node").data(nodes, function (d) {
-            return d.id || (d.id = ++i);
-        });
-
-        // Enter any new modes at the parent's previous position.
-        let nodeEnter = node
-            .enter()
-            .append("g")
+        // Enter any new nodes at the parent's previous position.
+        let nodeEnter = node.enter().append("g")
             .attr("class", "node")
-            .attr("transform", function (d) {
-                return "translate(" + data.y0 + "," + data.x0 + ")";
-            })
-            .on("click", click);
+            .attr("transform", d => `translate(${source.y0},${source.x0})`)
+            .on("click", (event, d) => this.clickHandler(event, d));
 
         // Add circle for the nodes
-        nodeEnter.append("circle").attr("class", "node").attr("r", 1e-6);
+        nodeEnter.append("circle")
+            .attr("class", "node")
+            .attr("r", 1e-6);
 
         // Add labels for the nodes
-        nodeEnter
-            .append("text")
+        nodeEnter.append("text")
             .attr("dy", ".35em")
-            .attr("x", function (d) {
-                return d.children || d._children ? -20 : 20;
-            })
-            .attr("text-anchor", function (d) {
-                return d.children || d._children ? "end" : "start";
-            })
-            .text(function (d) {
-                return d.data.data.label;
-            });
+            .attr("x", d => (d.children || d._children) ? -20 : 20)
+            .attr("text-anchor", d => (d.children || d._children) ? "end" : "start")
+            .text(d => d.data.data.label);
 
         // Add images for the nodes
-        nodeEnter
-            .append("image")
+        nodeEnter.append("image")
             .attr("class", "node-image")
-            .attr("xlink:href", function (d) {
-                const imagePath =
-                    path_to_icon_folder + "/" + d.data.id + ".png";
-                return imagePath;
-            })
-            .attr("transform", "translate (-12,-13)")
+            .attr("xlink:href", d => `${this.path_to_icon_folder}/${d.data.id}.png`)
+            .attr("transform", "translate(-12,-13)")
             .attr("width", "25px")
             .attr("height", "25px");
 
-        // UPDATE
+        // ---------------- node update section ----------------
         let duration = 750;
         let nodeUpdate = nodeEnter.merge(node);
 
-
-        // Transition to the proper position for the node
-        nodeUpdate
-            .transition('nodeUpdateTransition')
+        // Transition to the new position
+        nodeUpdate.transition()
             .duration(duration)
-            .attr("transform", function (d) {
-                return "translate(" + d.y + "," + d.x + ")";
-            });
+            .attr("transform", d => `translate(${d.y},${d.x})`);
 
-        // Update the node attributes and style
-        nodeUpdate
-            .select("circle.node")
+        // Update node attributes and style
+        nodeUpdate.select("circle.node")
             .attr("r", 15)
-            .style("fill", function (d) {
-                return d._children ? "lightsteelblue" : "#fff";
-            })
+            .style("fill", d => d._children ? "lightsteelblue" : "#fff")
             .attr("cursor", "pointer");
 
         // Remove any exiting nodes
-        let nodeExit = node
-            .exit()
-            .transition('nodeExitTransition')
+        let nodeExit = node.exit().transition()
             .duration(duration)
-            .attr("transform", function (d) {
-                return "translate(" + data.y + "," + data.x + ")";
-            })
+            .attr("transform", d => `translate(${source.y},${source.x})`)
             .remove();
 
-        // On exit reduce the node circles size to 0
+        // On exit reduce the node circle size to 0
         nodeExit.select("circle").attr("r", 1e-6);
-
-        // On exit reduce the opacity of text labels
         nodeExit.select("text").style("fill-opacity", 1e-6);
 
-        // ****************** links section ***************************
+        // ****************** Links section *******************
 
         // Update the links...
-        let link = basic_group.selectAll("path.link").data(links, function (d) {
-            return d.id;
-        });
+        let link = this.basic_group.selectAll("path.link")
+            .data(links, d => d.id);
+
         // Enter any new links at the parent's previous position.
-        let linkEnter = link
-            .enter()
-            .insert("path", "g")
+        let linkEnter = link.enter().insert("path", "g")
             .attr("class", "link")
-            .attr("d", function (d) {
-                let o = { x: data.x0, y: data.y0 };
+            .attr("d", d => {
+                let o = { x: source.x0, y: source.y0 };
                 return diagonal(o, o);
             })
-            .style("stroke", function (d) { return fill(d); })
-            // the width of the link is proportional to the size of the cell type
-            .style("stroke-width", function (d) {
-                return d.data.data[size_col_name] * 0.0004 + 3.5;
-            })
+            .style("stroke", d => this.fill(d))
+            .style("stroke-width", d => d.data.data[this.size_col_name] * 0.0004 + 3.5)
             .on("mouseover", function (event, d) {
                 let tooltip = document.getElementById('basicTreeTooltip');
                 tooltip.style.opacity = 1;
@@ -460,255 +346,328 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
                 tooltip.style.opacity = 0;
             });
 
-        // UPDATE
+        // ---------------- link update section ----------------
         let linkUpdate = linkEnter.merge(link);
 
-        linkUpdate.attr("stroke", fill);
-
         // Transition back to the parent element position
-        linkUpdate
-            .transition('linkUpdateTransition')
+        linkUpdate.transition()
             .duration(duration)
-            .attr("d", function (d) {
-                return diagonal(d, d.parent);
-            });
+            .attr("d", d => diagonal(d, d.parent));
 
         // Remove any exiting links
-        let linkExit = link
-            .exit()
-            .transition('linkExitTransition')
+        let linkExit = link.exit().transition()
             .duration(duration)
-            .attr("d", function (d) {
-                let o = { x: data.x, y: data.y };
+            .attr("d", d => {
+                let o = { x: source.x, y: source.y };
                 return diagonal(o, o);
             })
             .remove();
 
         // Store the old positions for transition.
-        nodes.forEach(function (d) {
+        nodes.forEach(d => {
             d.x0 = d.x;
             d.y0 = d.y;
         });
 
-        // Creates a curved (diagonal) path from parent to the child nodes
+        // Function to generate the diagonal paths
         function diagonal(s, d) {
-            path = `M ${s.y} ${s.x}
-        C ${(s.y + d.y) / 2} ${s.x},
-          ${(s.y + d.y) / 2} ${d.x},
-          ${d.y} ${d.x}`;
-
-            return path;
-        }
-
-        // Toggle children on click.
-        function click(event, d) {
-            if (d.children) {
-                d._children = d.children;
-                d.children = null;
-            } else {
-                d.children = d._children;
-                d._children = null;
-            }
-            // update the tree.
-            // collapse children when clicking the node; using the selected color for the links
-            update_tree(d, fill);
+            return `M ${s.y} ${s.x}
+            C ${(s.y + d.y) / 2} ${s.x},
+              ${(s.y + d.y) / 2} ${d.x},
+              ${d.y} ${d.x}`;
         }
     }
+    setColorScheme() {
+        this.updateColorSettings();
+        // Update the colors of all edges(link elements) after setting the new color scheme
+        d3.selectAll(".link")
+            .transition()
+            .style("stroke", (d) => this.fill(d));
+    }
+    updateColorSettings() {
+        super.updateColorSettings();
+        this.fill = (d) => {
+            console.log('d:', d);
+            if (d.data.data[this.search_column]) {
+                return this.color_scale(this.scale0_1(d.data.data[this.search_column])).hex();
+            }
+            return this.defaultColor;
+        };
+        // Update legend as well
+        this.setupColorLegend(this.selectedScheme);
+    }
+}
 
-    function build_radial_tree(data) {
+class RadialTreeLayout extends TreeLayout {
+    constructor(input_data, search_column, svg_location, path_to_icon_folder) {
+        super(input_data, search_column, svg_location, path_to_icon_folder);
+        this.radius = this.height * 0.6; // radial-specific property
+        // Transform origin for radial tree
+        this.radialTransformX = this.width / 2;
+        this.radialTransformY = 350;
+        // this.initializeSlider(); // Radial-specific slider for rotation
+    }
 
-        let radial_group = svg.append("g")
-            .attr("transform", "translate(" + radialTransformX + ", " + radialTransformY + ")");
-        // generate a hierarchical structure for the input data
-        let stratify = d3
-            .stratify()
-            .id((d) => d.id)
-            .parentId((d) => d.parent);
+    initializeSlider() {
+        let sliderContainer = document.getElementById("sliderContainer");
+        sliderContainer.style.display = "block"; // Show the slider for radial layout
 
-        let treeData = stratify(data);
+        var slider = new Slider('#mySlider', {
+            formatter: function (value) {
+                return 'Current value: ' + value;
+            }
+        });
 
+        let rotateValue = document.getElementById("rotateValue");
+        let treeSVG = document.getElementById("treeSVG");
+
+        slider.on('slide', function (sliderValue) {
+            rotateValue.innerHTML = sliderValue;
+            treeSVG.style.transform = "rotate(" + sliderValue + "deg)";
+        });
+    }
+
+    buildTree(parsedData) {
+        super.buildTree(parsedData);
+
+        // build radial tree
         let tree = d3
             .tree()
-            .size([2 * Math.PI, radius])
+            .size([2 * Math.PI, this.radius])
             .separation((a, b) => (a.parent == b.parent ? 1 : 8) / a.depth);
 
-        let root = tree(d3.hierarchy(treeData));
+
+        let root = tree(d3.hierarchy(this.treeData));
+        this.weightedAvgExpr(root);
+        this.root = root;
+
+        // Create the radial group
+        let radial_group = this.svg.append("g")
+            .attr("transform", "translate(" + this.radialTransformX + ", " + this.radialTransformY + ")");
 
         // Create link group
-        const linkgroup = radial_group
+        this.linkgroup = radial_group
             .append("g")
             .attr("fill", "none");
-
         // Create node group
-        const nodegroup = radial_group
+        this.nodegroup = radial_group
             .append("g")
             .attr("stroke-linejoin", "round");
 
-        weighted_avg_expr(root);
-        // Get the max expression value of certain gene across all cell types
-        // Then this will be used in the color scale section below.
-        const expr_value_array = [];
+        // Initialize with the first color scheme
+        this.setColorScheme();
+        let _d = 0;
+        this.updateTree(_d, this.fill);
+    }
+    updateTree(d, fill) {
+        let root = this.root;
+        let nodegroup = this.nodegroup;
+        let linkgroup = this.linkgroup;
 
-        for (i = 0; i < data.length; i++) {
-            if (data[i][search_column]) {
-                var expr_value = parseFloat(data[i][search_column]);
-                expr_value_array.push(expr_value);
-            }
-        };
-        expr_max = Math.max.apply(null, expr_value_array);
+        let links_data = root.links();
+        console.log('root:', root);
+        console.log('links_data:', links_data);
+        let links = linkgroup
+            .selectAll("path")
+            .attr("class", "radial_link")  // Assign the class 'link' to each path
+            .data(links_data, (d) => d.source.data.id + "_" + d.target.data.id);
 
-        //----------Color scale
-        // Initialize with the first scheme
-        setRadialColorScheme(selectedSchemeKey, expr_max);
+        links.exit().remove();
 
-        // Select all buttons with the 'data-scheme' attribute and attach the click event listeners
-        document.querySelectorAll('button[data-scheme]').forEach(button => {
-            button.addEventListener('click', function () {
-                // Extarct the selected scheme key
-                selectedSchemeKey = this.getAttribute('data-scheme');
-                // Call setColorScheme with the extracted scheme key and the global expr_max
-                setRadialColorScheme(selectedSchemeKey, expr_max);
+        let _d = d;
+        let newlinks = links
+            .enter()
+            .append("path")
+            .attr("class", "radial_link")
+            .attr("stroke", (d) => fill(d))
+            .attr("stroke-width", (d) => {
+                return d.target.data.data[this.size_col_name] * 0.0004 + 3.5;
+            })
+            .attr(
+                "d",
+                d3.linkRadial()
+                    .angle((d) => d.x)
+                    .radius(0.1)
+            )
+            .on("mouseover", (event, d) => {
+                let tooltip = document.getElementById('radialTreeTooltip');
+                tooltip.style.opacity = 1;
+                tooltip.style.left = event.pageX + 'px';
+                tooltip.style.top = event.pageY + 'px';
 
+                // Set the content of the tooltip
+                // Ensure the value is a number and format it to 3 decimal places
+                let valueToShow = parseFloat(d.target.data.data[this.search_column]).toFixed(3);
+
+                // Set the content of the tooltip
+                tooltip.querySelector('.tooltip-inner').textContent = `Value: ${valueToShow}`;
+            })
+            .on("mouseout", function () {
+                let tooltip = document.getElementById('radialTreeTooltip');
+                tooltip.style.opacity = 0;
             });
+
+        let alllinks = linkgroup.selectAll("path");
+        alllinks.transition('radialLinksTransition')
+            .duration(400)
+            .ease(d3.easeLinear)
+            .attr(
+                "d",
+                d3
+                    .linkRadial()
+                    .angle((d) => d.x)
+                    .radius((d) => d.y)
+            );
+
+
+        let nodes_data = root.descendants().reverse();
+        console.log('nodes_data:', nodes_data);
+
+        let nodes = nodegroup.selectAll("g").data(nodes_data, function (d) {
+            if (d.parent) {
+                return d.parent.data.id + d.data.id;
+            }
+            return d.data.id;
         });
 
-        function update_radial(fill) {
-            let root = tree(d3.hierarchy(treeData));
+        nodes.exit().remove();
 
-            let links_data = root.links();
+        let newnodes = nodes
+            .enter()
+            .append("g")
+            .attr("class", "node");
 
-            let links = linkgroup
-                .selectAll("path")
-                .attr("class", "radial_link")  // Assign the class 'link' to each path
-                .data(links_data, (d) => d.source.data.id + "_" + d.target.data.id);
+        let allnodes = nodegroup.selectAll("g");
 
-            links.exit().remove();
 
-            let newlinks = links
-                .enter()
-                .append("path")
-                .attr("class", "radial_link")
-                .attr("stroke", fill)
-                .attr("stroke-width", function (d) {
-                    return d.target.data.data[size_col_name] * 0.0004 + 3.5;
-                })
-                .attr(
-                    "d",
-                    d3
-                        .linkRadial()
-                        .angle((d) => d.x)
-                        .radius(0.1)
-                )
-                .on("mouseover", function (event, d) {
-                    let tooltip = document.getElementById('radialTreeTooltip');
-                    tooltip.style.opacity = 1;
-                    tooltip.style.left = event.pageX + 'px';
-                    tooltip.style.top = event.pageY + 'px';
+        allnodes.transition('radialNodeTransition')
+            .duration(400)
+            .ease(d3.easeLinear)
+            .attr(
+                "transform",
+                (d) => `rotate(${(d.x * 180) / Math.PI - 90})
+                translate(${d.y},0)`
+            );
 
-                    // Set the content of the tooltip
-                    // Ensure the value is a number and format it to 3 decimal places
-                    let valueToShow = parseFloat(d.target.data.data[search_column]).toFixed(3);
+        // Add circls for the nodes
+        newnodes
+            .append("circle")
+            .attr("class", "node")
+            .attr("r", 10);
 
-                    // Set the content of the tooltip
-                    tooltip.querySelector('.tooltip-inner').textContent = `Value: ${valueToShow}`;
-                })
-                .on("mouseout", function () {
-                    let tooltip = document.getElementById('radialTreeTooltip');
-                    tooltip.style.opacity = 0;
-                });
+        // TODO: after you click the node changed color.
+        nodegroup.selectAll("g circle").attr("fill", function (d) {
+            let altChildren = d.data.altChildren || [];
+            let children = d.data.children;
+            return d.children ||
+                (children && (children.length > 0 || altChildren.length > 0))
+                ? "#545454"
+                : "#ffffff";
+        });
 
-            let alllinks = linkgroup.selectAll("path");
-            alllinks.transition('radialLinksTransition')
-                .duration(400)
-                .ease(d3.easeLinear)
-                .attr(
-                    "d",
-                    d3
-                        .linkRadial()
-                        .angle((d) => d.x)
-                        .radius((d) => d.y)
-                );
+        // Add texts for the nodes
+        newnodes
+            .append("text")
+            .attr("dy", "0.35em")
+            .text((d) => d.data.data.label)
+            .clone(true)
+            .lower();
 
-            let nodes_data = root.descendants().reverse();
-            let nodes = nodegroup.selectAll("g").data(nodes_data, function (d) {
-                if (d.parent) {
-                    return d.parent.data.id + d.data.id;
-                }
-                return d.data.id;
+        nodegroup
+            .selectAll("g text")
+            .attr("x", (d) => (d.x < Math.PI === !d.children ? 14 : -14))
+            .attr("text-anchor", (d) =>
+                d.x < Math.PI === !d.children ? "start" : "end"
+            )
+            .attr("transform", (d) => (d.x >= Math.PI ? "rotate(180)" : null)); // The rotate(180) transformation flips these labels to appear upright.
+
+        // Add images for the nodes
+        newnodes
+            .append("image")
+            .attr("class", "node-image")
+            .attr("xlink:href", function (d) {
+                const imagePath = path_to_icon_folder + "/" + d.data.id + ".png";
+                return imagePath;
+            })
+            .attr("transform", "translate (-12,-13)")
+            .attr("width", "24px")
+            .attr("height", "24px")
+            .on("click", (event, d) => {
+                this.clickHandler(event, d);
             });
+    };
 
-            nodes.exit().remove();
-
-            let newnodes = nodes
-                .enter()
-                .append("g")
-                .attr("class", "node");
-
-            let allnodes = nodegroup.selectAll("g");
-
-
-            allnodes.transition('radialNodeTransition')
-                .duration(400)
-                .ease(d3.easeLinear)
-                .attr(
-                    "transform",
-                    (d) => `rotate(${(d.x * 180) / Math.PI - 90})
-                    translate(${d.y},0)`
-                );
-
-            // Add circls for the nodes
-            newnodes
-                .append("circle")
-                .attr("class", "node")
-                .attr("r", 10);
-
-            // TODO: after you click the node changed color.
-            nodegroup.selectAll("g circle").attr("fill", function (d) {
-                let altChildren = d.data.altChildren || [];
-                let children = d.data.children;
-                return d.children ||
-                    (children && (children.length > 0 || altChildren.length > 0))
-                    ? "#545454"
-                    : "#ffffff";
-            });
-
-            // Add texts for the nodes
-            newnodes
-                .append("text")
-                .attr("dy", "0.35em")
-                .text((d) => d.data.data.label)
-                .clone(true)
-                .lower();
-
-            nodegroup
-                .selectAll("g text")
-                .attr("x", (d) => (d.x < Math.PI === !d.children ? 14 : -14))
-                .attr("text-anchor", (d) =>
-                    d.x < Math.PI === !d.children ? "start" : "end"
-                )
-                .attr("transform", (d) => (d.x >= Math.PI ? "rotate(180)" : null)); // The rotate(180) transformation flips these labels to appear upright.
-
-            // Add images for the nodes
-            newnodes
-                .append("image")
-                .attr("class", "node-image")
-                .attr("xlink:href", function (d) {
-                    const imagePath = path_to_icon_folder + "/" + d.data.id + ".png";
-                    return imagePath;
-                })
-                .attr("transform", "translate (-12,-13)")
-                .attr("width", "24px")
-                .attr("height", "24px")
-                .on("click", function (event, d) {
-                    let altChildren = d.data.altChildren || [];
-                    let children = d.data.children;
-                    d.data.children = altChildren;
-                    d.data.altChildren = children;
-                    update_radial(fill);
-                });
+    setColorScheme() {
+        this.updateColorSettings();
+        // Update the colors of all edges(link elements) after setting the new color scheme
+        d3.selectAll(".radial_link")
+            .transition()
+            .style("stroke", (d) => this.fill(d));
+    }
+    updateColorSettings() {
+        super.updateColorSettings();
+        this.fill = (d) => {
+            console.log('d:', d);
+            console.log('search_column:', this.search_column);
+            let expr_level = d.target.data.data[this.search_column];
+            if (expr_level) {
+                return this.color_scale(this.scale0_1(expr_level)).hex();
+            }
+            return this.defaultColor;
         };
+        // Update legend as well
 
-        update_radial(fill);
+        this.setupColorLegend(this.selectedScheme);
     }
 
 }
+// Initialize views based on user interaction (switching layouts)
+function collapsible_tree(input_data, search_column, svg_location, path_to_icon_folder) {
+
+    let tree;
+
+    // TODO: initialize slider
+    // handling status variables
+
+    // initalize with horizontal layout
+    tree = new HorizontalTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
+    tree.initializeTreeView(); // Rebuild for horizontal
+    let treeSVG = d3.select(`#${svg_location} svg`); // Select the SVG using D3
+    // Attach event listeners for layout switch
+    document.getElementById("tree-layout-button").addEventListener("click", function () {
+        // Clear existing SVG content
+        // Ensure the SVG is selected and emptied
+        let svgContainer = d3.select(`#${svg_location}`);
+        svgContainer.selectAll("svg").remove(); // Remove old SVG to clear the content
+        tree = new HorizontalTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
+        tree.initializeTreeView(); // Rebuild for horizontal
+        let sliderContainer = document.getElementById("sliderContainer");
+        sliderContainer.style.display = "none"; // Not show the slider for horizontal layout
+        console.log("Switched to Horizontal Layout");
+    });
+
+    document.getElementById("radial-layout-button").addEventListener("click", function () {
+        // Clear existing SVG content
+        // Ensure the SVG is selected and emptied
+        let svgContainer = d3.select(`#${svg_location}`);
+        svgContainer.selectAll("svg").remove(); // Remove old SVG to clear the content
+
+        tree = new RadialTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
+        tree.initializeTreeView(); // Rebuild for radial
+        tree.initializeSlider();
+        console.log("Switched to Radial Layout");
+    });
+
+    // set up for color buttons and attach the click event listeners
+    document.querySelectorAll('button[data-scheme]').forEach(button => {
+        button.addEventListener('click', function (event) {
+            // Extarct the selected scheme key
+            tree.selectedSchemeKey = event.target.getAttribute('data-scheme');
+            // Call setColorScheme with the extracted scheme key and the global expr_max
+            tree.setColorScheme();
+        });
+    });
+
+}
+
+

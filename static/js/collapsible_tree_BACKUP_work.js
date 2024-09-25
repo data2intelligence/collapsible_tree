@@ -235,7 +235,7 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
         // Initialize with the first scheme
         setColorScheme(selectedSchemeKey, expr_max);
 
-        // Select all buttons with the 'data-scheme' attribute and attach the click event listeners
+        // set up for color buttons and attach the click event listeners
         document.querySelectorAll('button[data-scheme]').forEach(button => {
             button.addEventListener('click', function () {
                 // Extarct the selected scheme key
@@ -334,7 +334,7 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
     function update_tree(data, fill) {
         // Compute the new tree layout.
         let nodes = root.descendants(),
-            // the slice(1) here, skip the 1st element, which means removing the root node.
+            // the slice(1) here, skip the 1st element, which means skip the root node.
             links = root.descendants().slice(1);
 
         // ****************** Nodes section ********
@@ -516,9 +516,6 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
     }
 
     function build_radial_tree(data) {
-
-        let radial_group = svg.append("g")
-            .attr("transform", "translate(" + radialTransformX + ", " + radialTransformY + ")");
         // generate a hierarchical structure for the input data
         let stratify = d3
             .stratify()
@@ -534,6 +531,8 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
 
         let root = tree(d3.hierarchy(treeData));
 
+        let radial_group = svg.append("g")
+            .attr("transform", "translate(" + radialTransformX + ", " + radialTransformY + ")");
         // Create link group
         const linkgroup = radial_group
             .append("g")
