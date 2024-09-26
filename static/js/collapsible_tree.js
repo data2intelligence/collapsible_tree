@@ -20,10 +20,8 @@ class TreeLayout {
             }
         };
         this.selectedSchemeKey = 'scheme1'; // Default scheme
-        this.defaultColor = "#cccccc"; // Default color
-        // const color_scale = null;
+        this.defaultColor = "#cccccc"; // Default color (light grey)
         this.initSVG();   // Initialize SVG element
-        // this.initColorScheme(); // Initialize color scheme
 
     }
 
@@ -314,8 +312,6 @@ class HorizontalTreeLayout extends TreeLayout {
         nodeExit.select("text").style("fill-opacity", 1e-6);
 
         // ****************** Links section *******************
-
-        // Update the links...
         let link = this.basic_group.selectAll("path.link")
             .data(links, d => d.id);
 
@@ -600,11 +596,13 @@ class RadialTreeLayout extends TreeLayout {
     setColorScheme() {
         this.updateColorSettings();
         // Update the colors of all edges(link elements) after setting the new color scheme
+        // NOTE:  radial tree use ".radial_link", which is different from horizontal tree
         d3.selectAll(".radial_link")
             .transition()
             .style("stroke", (d) => this.fill(d));
     }
     updateColorSettings() {
+        // NOTE: radial tree use'd.target.data.data' to access. different from horizontal tree
         super.updateColorSettings();
         this.fill = (d) => {
             console.log('d:', d);
@@ -623,16 +621,14 @@ class RadialTreeLayout extends TreeLayout {
 }
 // Initialize views based on user interaction (switching layouts)
 function collapsible_tree(input_data, search_column, svg_location, path_to_icon_folder) {
-
-    let tree;
-
-    // TODO: initialize slider
-    // handling status variables
-
     // initalize with horizontal layout
+    let tree;
     tree = new HorizontalTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
     tree.initializeTreeView(); // Rebuild for horizontal
-    let treeSVG = d3.select(`#${svg_location} svg`); // Select the SVG using D3
+
+    // Select the SVG using D3
+    let treeSVG = d3.select(`#${svg_location} svg`);
+
     // Attach event listeners for layout switch
     document.getElementById("tree-layout-button").addEventListener("click", function () {
         // Clear existing SVG content
@@ -658,7 +654,7 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
         console.log("Switched to Radial Layout");
     });
 
-    // set up for color buttons and attach the click event listeners
+    // Set up for color buttons and attach the click event listeners
     document.querySelectorAll('button[data-scheme]').forEach(button => {
         button.addEventListener('click', function (event) {
             // Extarct the selected scheme key
