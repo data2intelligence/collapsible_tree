@@ -328,8 +328,8 @@ class HorizontalTreeLayout extends TreeLayout {
             .on("mouseover", function (event, d) {
                 let tooltip = document.getElementById('basicTreeTooltip');
                 tooltip.style.opacity = 1;
-                tooltip.style.left = (event.pageX) + 'px';
-                tooltip.style.top = (event.pageY) + 'px';
+                tooltip.style.left = (event.layerX) + 'px';
+                tooltip.style.top = (event.layerY) + 'px';
                 // Set the content of the tooltip
                 // Ensure the value is a number and format it to 3 decimal places
                 let valueToShow = parseFloat(d.data.data[search_column]).toFixed(3);
@@ -403,8 +403,6 @@ class RadialTreeLayout extends TreeLayout {
         this.radialTransformY = 350;
     }
 
-
-
     buildTree(parsedData) {
         super.buildTree(parsedData);
 
@@ -412,7 +410,7 @@ class RadialTreeLayout extends TreeLayout {
         let tree = d3
             .tree()
             .size([2 * Math.PI, this.radius])
-            .separation((a, b) => (a.parent == b.parent ? 1 : 8) / a.depth);
+            .separation((a, b) => (a.parent == b.parent ? 1 : 10) / a.depth);
 
 
         let root = tree(d3.hierarchy(this.treeData));
@@ -469,8 +467,8 @@ class RadialTreeLayout extends TreeLayout {
             .on("mouseover", (event, d) => {
                 let tooltip = document.getElementById('radialTreeTooltip');
                 tooltip.style.opacity = 1;
-                tooltip.style.left = event.pageX + 'px';
-                tooltip.style.top = event.pageY + 'px';
+                tooltip.style.left = (event.layerX) + 'px';
+                tooltip.style.top = (event.layerY) + 'px';
 
                 // Set the content of the tooltip
                 // Ensure the value is a number and format it to 3 decimal places
@@ -531,7 +529,6 @@ class RadialTreeLayout extends TreeLayout {
             .attr("class", "node")
             .attr("r", 10);
 
-        // TODO: after you click the node changed color.
         nodegroup.selectAll("g circle").attr("fill", function (d) {
             let altChildren = d.data.altChildren || [];
             let children = d.data.children;
@@ -600,14 +597,24 @@ class RadialTreeLayout extends TreeLayout {
 
 function initializeSlider() {
     let sliderContainer = document.getElementById("sliderContainer");
+    if (sliderContainer.innerHTML) {
+        sliderContainer.innerHTML = "";
+    }
+    // Reset the sliderContainer innerHTML to avoid duplicate sliders
+    sliderContainer.innerHTML = `
+        <input id="mySlider" data-slider-id='mySlider' type="text" data-slider-min="-360" data-slider-max="360" data-slider-step="1" data-slider-value="-45"/>
+                          <div class="range-value">
+                              Rotate <span id="rotateValue">0</span> degrees
+                          </div>
+    `;
     sliderContainer.style.display = "block"; // Show the slider for radial layout
 
-    var slider = new Slider('#mySlider', {
+    slider = new Slider('#mySlider', {
         formatter: function (value) {
             return 'Current value: ' + value;
         }
     });
-
+    // Roate the tree based on the slider value
     let rotateValue = document.getElementById("rotateValue");
     let treeSVG = document.getElementById("treeSVG");
 
@@ -623,11 +630,10 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
     let tree;
     tree = new HorizontalTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
     tree.initializeTreeView(); // Build the horizontal tree by default
-    initializeSlider();
+    document.querySelector('.custom-btn-blue').classList.add('active');
+
     let sliderContainer = document.getElementById("sliderContainer");
     sliderContainer.style.display = "none"; // Not show the slider for horizontal layout
-    // Select the SVG using D3
-    let treeSVG = d3.select(`#${svg_location} svg`);
 
     // Attach event listeners for layout switch
     document.getElementById("horizontal-layout-button").addEventListener("click", function () {
@@ -657,8 +663,10 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
 
         tree = new RadialTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
         tree.initializeTreeView(); // Rebuild for radial
+
         console.log("Switched to Radial Layout");
 
+        initializeSlider();
         // Show the slider for radial layout
         sliderContainer.style.display = "block";
 
