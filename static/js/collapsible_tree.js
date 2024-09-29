@@ -154,6 +154,7 @@ class TreeLayout {
 
     }
     updateColorSettings() {
+
         this.selectedScheme = this.schemes[this.selectedSchemeKey].colors;
         this.color_scale = chroma.scale(this.selectedScheme).mode('lch').domain([0, 1]);
         this.scale0_1 = d3.scaleLinear().domain([0, this.expr_max]).range([0, 1]);
@@ -235,7 +236,6 @@ class HorizontalTreeLayout extends TreeLayout {
             .separation(function (a, b) {
                 return a.parent == b.parent ? 1 : 2;
             })(root);
-        console.log('root in build tree:', root);
 
         // Recursively calculate the weighted average of expression levels for each parent node,
         // but only if the node itself does not have a value.
@@ -255,6 +255,7 @@ class HorizontalTreeLayout extends TreeLayout {
         // Compute the new tree layout.
         let nodes = this.root.descendants(),
             links = this.root.descendants().slice(1);
+        let search_column = this.search_column;
 
         // ****************** Nodes section ********
         let i = 0;
@@ -327,8 +328,8 @@ class HorizontalTreeLayout extends TreeLayout {
             .on("mouseover", function (event, d) {
                 let tooltip = document.getElementById('basicTreeTooltip');
                 tooltip.style.opacity = 1;
-                tooltip.style.left = event.pageX + 'px';
-                tooltip.style.top = event.pageY + 'px';
+                tooltip.style.left = (event.pageX) + 'px';
+                tooltip.style.top = (event.pageY) + 'px';
                 // Set the content of the tooltip
                 // Ensure the value is a number and format it to 3 decimal places
                 let valueToShow = parseFloat(d.data.data[search_column]).toFixed(3);
@@ -383,7 +384,6 @@ class HorizontalTreeLayout extends TreeLayout {
     updateColorSettings() {
         super.updateColorSettings();
         this.fill = (d) => {
-            console.log('d:', d);
             if (d.data.data[this.search_column]) {
                 return this.color_scale(this.scale0_1(d.data.data[this.search_column])).hex();
             }
@@ -401,27 +401,9 @@ class RadialTreeLayout extends TreeLayout {
         // Transform origin for radial tree
         this.radialTransformX = this.width / 2;
         this.radialTransformY = 350;
-        // this.initializeSlider(); // Radial-specific slider for rotation
     }
 
-    initializeSlider() {
-        let sliderContainer = document.getElementById("sliderContainer");
-        sliderContainer.style.display = "block"; // Show the slider for radial layout
 
-        var slider = new Slider('#mySlider', {
-            formatter: function (value) {
-                return 'Current value: ' + value;
-            }
-        });
-
-        let rotateValue = document.getElementById("rotateValue");
-        let treeSVG = document.getElementById("treeSVG");
-
-        slider.on('slide', function (sliderValue) {
-            rotateValue.innerHTML = sliderValue;
-            treeSVG.style.transform = "rotate(" + sliderValue + "deg)";
-        });
-    }
 
     buildTree(parsedData) {
         super.buildTree(parsedData);
@@ -461,8 +443,7 @@ class RadialTreeLayout extends TreeLayout {
         let linkgroup = this.linkgroup;
 
         let links_data = root.links();
-        console.log('root:', root);
-        console.log('links_data:', links_data);
+
         let links = linkgroup
             .selectAll("path")
             .attr("class", "radial_link")  // Assign the class 'link' to each path
@@ -517,7 +498,6 @@ class RadialTreeLayout extends TreeLayout {
 
 
         let nodes_data = root.descendants().reverse();
-        console.log('nodes_data:', nodes_data);
 
         let nodes = nodegroup.selectAll("g").data(nodes_data, function (d) {
             if (d.parent) {
@@ -605,8 +585,6 @@ class RadialTreeLayout extends TreeLayout {
         // NOTE: radial tree use'd.target.data.data' to access. different from horizontal tree
         super.updateColorSettings();
         this.fill = (d) => {
-            console.log('d:', d);
-            console.log('search_column:', this.search_column);
             let expr_level = d.target.data.data[this.search_column];
             if (expr_level) {
                 return this.color_scale(this.scale0_1(expr_level)).hex();
@@ -619,27 +597,56 @@ class RadialTreeLayout extends TreeLayout {
     }
 
 }
-// Initialize views based on user interaction (switching layouts)
+
+function initializeSlider() {
+    let sliderContainer = document.getElementById("sliderContainer");
+    sliderContainer.style.display = "block"; // Show the slider for radial layout
+
+    var slider = new Slider('#mySlider', {
+        formatter: function (value) {
+            return 'Current value: ' + value;
+        }
+    });
+
+    let rotateValue = document.getElementById("rotateValue");
+    let treeSVG = document.getElementById("treeSVG");
+
+    slider.on('slide', function (sliderValue) {
+        rotateValue.innerHTML = sliderValue;
+        treeSVG.style.transform = "rotate(" + sliderValue + "deg)";
+    });
+
+};
+// Initialize views based on user interaction (switching layouts and color changes)
 function collapsible_tree(input_data, search_column, svg_location, path_to_icon_folder) {
     // initalize with horizontal layout
     let tree;
     tree = new HorizontalTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
-    tree.initializeTreeView(); // Rebuild for horizontal
-
+    tree.initializeTreeView(); // Build the horizontal tree by default
+    initializeSlider();
+    let sliderContainer = document.getElementById("sliderContainer");
+    sliderContainer.style.display = "none"; // Not show the slider for horizontal layout
     // Select the SVG using D3
     let treeSVG = d3.select(`#${svg_location} svg`);
 
     // Attach event listeners for layout switch
-    document.getElementById("tree-layout-button").addEventListener("click", function () {
+    document.getElementById("horizontal-layout-button").addEventListener("click", function () {
         // Clear existing SVG content
         // Ensure the SVG is selected and emptied
         let svgContainer = d3.select(`#${svg_location}`);
         svgContainer.selectAll("svg").remove(); // Remove old SVG to clear the content
         tree = new HorizontalTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
         tree.initializeTreeView(); // Rebuild for horizontal
-        let sliderContainer = document.getElementById("sliderContainer");
-        sliderContainer.style.display = "none"; // Not show the slider for horizontal layout
         console.log("Switched to Horizontal Layout");
+
+        // Remove the 'active' class from all buttons
+        document.querySelectorAll('button[data-scheme]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        // since blue scheme is default, add 'active' class to blue button
+        document.querySelector('.custom-btn-blue').classList.add('active');
+
+        sliderContainer.style.display = "none"; // Not show the slider for horizontal layout
     });
 
     document.getElementById("radial-layout-button").addEventListener("click", function () {
@@ -650,16 +657,35 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
 
         tree = new RadialTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
         tree.initializeTreeView(); // Rebuild for radial
-        tree.initializeSlider();
         console.log("Switched to Radial Layout");
+
+        // Show the slider for radial layout
+        sliderContainer.style.display = "block";
+
+        // Remove the 'active' class from all buttons
+        document.querySelectorAll('button[data-scheme]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        // since blue scheme is default, add 'active' class to blue button
+        document.querySelector('.custom-btn-blue').classList.add('active');
+
     });
 
-    // Set up for color buttons and attach the click event listeners
     document.querySelectorAll('button[data-scheme]').forEach(button => {
         button.addEventListener('click', function (event) {
-            // Extarct the selected scheme key
-            tree.selectedSchemeKey = event.target.getAttribute('data-scheme');
-            // Call setColorScheme with the extracted scheme key and the global expr_max
+            let clickedButton = event.currentTarget;
+            // Remove the 'active' class from all buttons
+            document.querySelectorAll('button[data-scheme]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Add the 'active' class to the clicked button
+            clickedButton.classList.add('active');
+            // Extract the selected scheme key
+            const selectedSchemeKey = clickedButton.getAttribute('data-scheme');
+            console.log("Selected scheme key:", selectedSchemeKey);  // Debugging log
+
+            // Update the tree's selected scheme key and call setColorScheme
+            tree.selectedSchemeKey = selectedSchemeKey;
             tree.setColorScheme();
         });
     });

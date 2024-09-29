@@ -58,12 +58,11 @@
 }
 
 .custom-btn-viridis {
-  border-color: #8fd744;
+  border-color: #259b60;
   border-width: 3px;
   background-color: #fff;
-  color: #8fd744;
+  color: #259b60;
 }
-
 
 #legendContainer {
   display: inline-block;
@@ -80,12 +79,10 @@
   height: 50%;
   /* Adjusted height */
   border-radius: 15px;
-  background: linear-gradient(to right, red, yellow, green);
+  background: linear-gradient(to right, white, grey);
   /* Example gradient */
   border: 2px solid #ccc;
-  /* Border to enhance the 3D effect */
-  /* box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2),
-    0 2px 5px rgba(0, 0, 0, 0.1); */
+
 }
 
 #valueLabels span {
