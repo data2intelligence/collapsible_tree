@@ -700,4 +700,3 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
 
 }
 
-
