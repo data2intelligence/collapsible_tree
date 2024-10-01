@@ -106,4 +106,4 @@ T CD8,T CD8 effector,effector,5.98,2130.0
 
 **Download and edit the image**
 ---
-With `right click` -> `print`, you could download the svg in `pdf`, which enables you to edit the diagram in editor software, like InkScape. You could drag the icons, modify the text. 
+By right-clicking and selecting `Print`, you can download the SVG as a PDF, which allows you to edit the diagram in graphic editing software like Inkscape. You can drag icons, modify text, and make other adjustments. If the color legend appears in black and white, enable the `Print backgrounds` option to retain the colors.
