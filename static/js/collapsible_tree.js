@@ -2,6 +2,7 @@ class TreeLayout {
     constructor(input_data, search_column, svg_location, path_to_icon_folder) {
         this.input_data = input_data;
         this.search_column = search_column;
+        this.svg_location_id = svg_location;
         this.svg_container = document.getElementById(svg_location);
         this.path_to_icon_folder = path_to_icon_folder;
         this.size_col_name = 'celltype_size'; // Change if needed
@@ -624,16 +625,19 @@ function initializeSlider() {
     });
 
 };
+
 // Initialize views based on user interaction (switching layouts and color changes)
 function collapsible_tree(input_data, search_column, svg_location, path_to_icon_folder) {
+    console.log("collapsible_tree function is called");
     // initalize with horizontal layout
     let tree;
     tree = new HorizontalTreeLayout(input_data, search_column, svg_location, path_to_icon_folder);
     tree.initializeTreeView(); // Build the horizontal tree by default
     document.querySelector('.custom-btn-blue').classList.add('active');
-
     let sliderContainer = document.getElementById("sliderContainer");
     sliderContainer.style.display = "none"; // Not show the slider for horizontal layout
+
+    let svg_location_id = tree.svg_location_id;
 
     // Attach event listeners for layout switch
     document.getElementById("horizontal-layout-button").addEventListener("click", function () {
@@ -678,7 +682,7 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
         document.querySelector('.custom-btn-blue').classList.add('active');
 
     });
-
+    // Add event listener to the color scheme buttons
     document.querySelectorAll('button[data-scheme]').forEach(button => {
         button.addEventListener('click', function (event) {
             let clickedButton = event.currentTarget;
@@ -697,6 +701,7 @@ function collapsible_tree(input_data, search_column, svg_location, path_to_icon_
             tree.setColorScheme();
         });
     });
+
 
 }
 
