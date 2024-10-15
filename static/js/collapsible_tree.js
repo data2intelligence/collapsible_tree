@@ -328,8 +328,8 @@ class HorizontalTreeLayout extends TreeLayout {
             .on("mouseover", function (event, d) {
                 let tooltip = document.getElementById('basicTreeTooltip');
                 tooltip.style.opacity = 1;
-                tooltip.style.left = (event.layerX) + 'px';
-                tooltip.style.top = (event.layerY) + 'px';
+                tooltip.style.left = (event.pageX) + 'px';
+                tooltip.style.top = (event.pageY) + 'px';
                 // Set the content of the tooltip
                 // Ensure the value is a number and format it to 3 decimal places
                 let valueToShow = parseFloat(d.data.data[search_column]).toFixed(3);
@@ -467,8 +467,8 @@ class RadialTreeLayout extends TreeLayout {
             .on("mouseover", (event, d) => {
                 let tooltip = document.getElementById('radialTreeTooltip');
                 tooltip.style.opacity = 1;
-                tooltip.style.left = (event.layerX) + 'px';
-                tooltip.style.top = (event.layerY) + 'px';
+                tooltip.style.left = (event.pageX) + 'px';
+                tooltip.style.top = (event.pageY) + 'px';
 
                 // Set the content of the tooltip
                 // Ensure the value is a number and format it to 3 decimal places
