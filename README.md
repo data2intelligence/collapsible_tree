@@ -30,13 +30,18 @@ Preview:
 
 We demonstrate a basic example of 'collapsible tree'. In this example, we run the app on a local server using Django.
 
-To run this example, use the following command:
+To run this example, all the necessary commands are bundled in the `run_server.sh` file.
+
+The scripts will help you to:
+- 1. Create a conda environment based on the provided `environment.yaml` file and activate it.
 ```bash
-bash run_server.sh
+conda env create -f environment.yaml  
+conda activate collapsible_tree_env 
 ```
-This script will help you to:
-- 1. Create a conda environment based on the provided `environment.yaml` file.
 - 2. Start the Django server.
+```bash
+python manage.py runserver
+```
 
 The server will be running at http://127.0.0.1:8000.
 
