@@ -1,6 +1,7 @@
 name: collapsible_tree_env
 channels:
   - defaults
+  - pip
 dependencies:
   - python=3.11
   - django=5.1
