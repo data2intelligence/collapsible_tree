@@ -112,3 +112,21 @@ T CD8,T CD8 effector,effector,5.98,2130.0
 **Download and edit the image**
 ---
 By right-clicking and selecting `Print`, you can download the SVG as a PDF, which can then be edited in graphic design software like Inkscape. This allows you to drag icons, modify text, and make other adjustments. If the color legend appears in black and white, enable the `Print backgrounds` option to retain the original colors. Additionally, when printing the PDF in Chrome, ensure the following print settings: `Layout` -> `Landscape`; `More setting`s` -> `Paper size` -> `Legal`.
+
+**Citing Collapsible Tree**
+---
+If you use `Collapsible Tree` in your work, please cite it with:
+> Yuan Gao, Rob Patro, Peng Jiang, Collapsible tree: interactive web app to present collapsible hierarchies, Bioinformatics, Volume 40, Issue 11, November 2024, btae645, https://doi.org/10.1093/bioinformatics/btae645
+
+```
+@article{Gao2024,
+  title={Collapsible tree: interactive web app to present collapsible hierarchies},
+  author={Gao, Yuan and Patro, Rob and Jiang, Peng},
+  journal={Bioinformatics},
+  volume={40},
+  number={11},
+  pages={btae645},
+  year={2024},
+  publisher={Oxford University Press}
+}
+```
